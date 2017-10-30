@@ -1,0 +1,97 @@
+[
+  {"Core Mods": [
+    {"LoL Boards": [
+      {"User Identities": [
+        {"FEK Avatars": [
+          {"100": "100x100"},
+          {"125": "125x125"},
+          {"150": "150x150"},
+          {"175": "175x175"},
+          {"200": "200x200"}
+        ]},
+        {"Fallback Avatars": [
+          {"0": "Disable"},
+          {"1": "Trident (Dark)"},
+          {"2": "Trident (Light)"},
+          {"3": "Trident (Parchment)"},
+          {"4": "Poro (Dark)"},
+          {"5": "Poro (Light)"},
+          {"6": "Poro (Parchment)"},
+          {"7": "Happy Cloud (Dark)"},
+          {"8": "Happy Cloud (Light)"},
+          {"9": "Happy Cloud (Parchment)"}
+        ]},
+        {"Enhanced Voting": [
+          {"0": "Disable"},
+          {"1": "Individual Votes"},
+          {"2": "Total Votes"},
+          {"3": "Hide Votes"}
+        ]},
+        {"Blacklisting": "1"},
+        {"OP Style Change": "1"},
+        {"Remove Profile Hover Popup": "1"}
+      ]},
+      {"Navigation Enhancements": [
+        {"Enhanced Thread Preview": "1"},
+        {"Highlight My Threads": [
+          {"0": "Disable"},
+          {"#000000": "Black"},
+          {"#400000": "Red"},
+          {"#442000": "Orange"},
+          {"#303000": "Yellow"},
+          {"#002800": "Green"},
+          {"#003737": "Cyan"},
+          {"#000A50": "Blue"},
+          {"#551A8B": "Purple"},
+          {"#9400D3": "Violet"}
+        ]},
+        {"Boards Dropdown Menu": "1"},
+        {"Thumbnails": [
+          {"0": "Disable"},
+          {"1": "Animate thumbnails"},
+          {"2": "Hide thumbnails"}
+        ]},
+        {"Sticky Navbar": "0"},
+        {"Empty Vote Replacement": [
+          {"0": "Disable"},
+          {"1": "Green banners"},
+          {"2": "Green banners and avatars"}
+        ]}
+      ]},
+      {"Multimedia": [
+        {"Media Embedding": "1"}
+      ]},
+      {"Miscellaneous": [
+        {"Roll Dice": "1"}
+      ]}
+    ]},
+    {"Blacklist": [
+      {"Blacklisted Users": [
+        null
+      ]}
+    ]},
+    {"Hidden Boards": [
+      {"These boards are hidden from the front page": [
+        null
+      ]}
+    ]},
+    {"Fish Chips": [
+      null
+    ]}
+  ]},
+  {"FEK": [
+    {"Announcements": [
+      {"Announcements": [
+        null
+      ]}
+    ]},
+    {"Changelog": [
+      null
+    ]},
+    {"Donate": [
+      {"Do you love FEK?": [
+        null
+      ]}
+    ]}
+  ]}
+]

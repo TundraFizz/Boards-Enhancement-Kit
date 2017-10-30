@@ -1,0 +1,176 @@
+/******************/
+/* Original posts */
+/******************/
+
+.op-container > .masthead {
+  padding-bottom: 10px !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info {
+  position: relative !important;
+  top:      -8px     !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile {
+  position:   relative !important;
+  /*width:      200px    !important;*/
+  height:     0px      !important;
+  left:       -76px    !important;
+  text-align: center   !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover {
+  min-width: 144px    !important;
+  position:  absolute !important;
+  left:      29px     !important;
+  top:       50px !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover > .icon,
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover > .userGroupIcon {
+  position:       relative !important;
+  display:        table    !important;
+  top:            30px     !important;
+  width:          100px;               /* Not important because this can change depending on user settings */
+  height:         100px;               /* Not important because this can change depending on user settings */
+  margin:         0        !important;
+  font-variant:   none     !important;
+  letter-spacing: 0px      !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover > .icon          > img,
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover > .userGroupIcon > img {
+  display: block          !important;
+  margin:  0 auto;
+  width:   100px;                     /* Not important because this can change depending on user settings */
+  height:  100px;                     /* Not important because this can change depending on user settings */
+  border:  solid 1px gray !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .profile-hover > .username {
+  position:       relative                                !important;
+  position:       absolute                                !important;
+  left:           0px;                                                /* Not important because this can change depending on user settings */
+  /*top:            45px                                    !important;*/
+  width:          100%                                    !important;
+  font-size:      16px                                    !important;
+  font-family:    "Constantia","Palatino","Georgia",serif !important;
+  letter-spacing: 0px                                     !important;
+  text-align:     center                                  !important;
+  z-index:        1                                       !important;
+  overflow:       hidden                                  !important;
+}
+
+.op-container > .masthead > .discussion-title > .author-info > .inline-profile > .realm {
+  display: none !important;
+}
+
+#content {
+  padding-top:  27px !important;
+  padding-left: 200px;           /* Not important because this can change depending on user settings */
+}
+
+/*****************/
+/* Regular posts */
+/*****************/
+
+.flat-comments > div {
+  padding-top:    4px  !important;
+  padding-bottom: 10px !important;
+}
+
+.flat-comments > div > .small > .voting > .riot-voting {
+  position: absolute !important;
+  top:      46px     !important;
+  left:      8px     !important;
+}
+
+.body-container > .body {
+  padding-top:  4px !important;
+  padding-left: 120px;          /* Not important because this can change depending on user settings */
+  min-height:   100px;          /* Not important because this can change depending on user settings */
+}
+
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover {
+  display:    block    !important;
+  min-width:  144px    !important;
+  position:   relative !important;
+  left:       0px      !important;
+  text-align: center   !important;
+}
+
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .icon,
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .userGroupIcon {
+  position:       absolute !important;
+  display:        table    !important;
+  top:            32px     !important;
+  font-variant:   none     !important;
+  letter-spacing: 0px      !important;
+}
+
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .icon          > img,
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .userGroupIcon > img {
+  /*position: absolute       !important;*/
+  display:  block          !important;
+  margin:   0 auto         !important;
+  width:    100px;                     /* Not important because this can change depending on user settings */
+  height:   100px;                     /* Not important because this can change depending on user settings */
+  border:   solid 1px gray !important;
+}
+
+.author-info > .inline-profile > .profile-hover > .icon          > .bek-profile-popup,
+.author-info > .inline-profile > .profile-hover > .userGroupIcon > .bek-profile-popup {
+  position:         absolute        !important;
+  border:           1px solid black !important;
+  width:            100px           !important;
+  height:           112px           !important;
+  top:              0px             !important;
+  right:            -100px          !important;
+  background-color: white           !important;
+  padding-left:     4px             !important;
+  font-size:        14px            !important;
+  text-align:       left            !important;
+  line-height:      17px            !important;
+}
+
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .icon          > .bek-profile-popup,
+:not(.isDeleted) > .body-container > .header > .inline-profile > .profile-hover > .userGroupIcon > .bek-profile-popup {
+  position:         absolute        !important;
+  border:           1px solid black !important;
+  width:            100px           !important;
+  height:           112px           !important;
+  top:              0px             !important;
+  right:            -100px          !important;
+  background-color: white           !important;
+  padding-left:     4px             !important;
+  font-size:        14px            !important;
+  text-align:       left            !important;
+  line-height:      17px            !important;
+}
+
+.body-container > .header > .inline-profile > .profile-hover > .username {
+  position:         relative    !important;
+  background-color: transparent !important;
+  letter-spacing:   0px         !important;
+  font-variant:     normal      !important;
+  text-align:       center      !important;
+  width:            140px       !important;
+  padding:          0px         !important;
+}
+
+:not(.isDeleted) > .body-container > .header > .inline-profile > .realm {
+  display: none;
+}
+
+:not(.isDeleted) > .body-container > .header > .timeago {
+  position: relative !important;
+  left:     12px     !important;
+}
+
+/****************************/
+/* Remove the profile hover */
+/****************************/
+
+.riot-apollo.profile-hover {
+  display: none !important;
+}
