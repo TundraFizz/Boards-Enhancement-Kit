@@ -36,12 +36,11 @@ function BEK(){}
 // Initialize: Entry point for BEK //
 /////////////////////////////////////
 BEK.prototype.Initialize = function(){
-  if(typeof disableBEK !== "undefined" && disableBEK) return; // For Wuks
-  // LoadCSS(`${domain}/fek/css/fek-panel.css`);LoadCSS(`${domain}/fek/css/thread.css`); // CSS should only be loaded for development purposes
+  // LoadCSS(`${domain}/fek/css/fek-panel.css`); // CSS should only be loaded for development purposes
 
   var self = this;
 
-  self.BEKversion       = "0.1.0";
+  self.BEKversion       = "0.2.0";
   self.BEKpage          = "https://boards.na.leagueoflegends.com/en/c/general-discussion/U8uw8k1l";
   self.BEKgfx           = `${domain}/fek/gfx/misc/`;
   self.cIcons           = `${domain}/fek/gfx/iconsmallchampion/`;
@@ -127,7 +126,7 @@ BEK.prototype.DefaultVariables = function(){
 ///////////////////////////////////////////////
 BEK.prototype.Main = function(){
   var self = this;
-  // console.log(self["data"]);
+  console.log(self["data"]);
 
   // self.GetAnnouncements();
   self.AddBEKNavBar();
@@ -137,8 +136,13 @@ BEK.prototype.Main = function(){
   self.SettleGUI();
   self.KeyWatch();
 
-  if(self.page == "Index")
+  if(self["data"]["Master Switch"] == "off")
+    return;
+
+  if(self.page == "Index"){
     self.WaitAndRun(".total-votes", self.LoadIndex);
+    self.WaitAndRun(".riot-voting.authenticated > li:nth-child(4)", self.LoadIndex);
+  }
   else if(self.page == "Thread")
     self.WaitAndRun(".profile-hover", self.QueryServer);
 
@@ -243,7 +247,6 @@ BEK.prototype.RunMutationObserver = function(){
         self.WaitAndRun(mutations[0].addedNodes[0].children[0], self.LoadIndex);
       }
       else if(self.page == "Thread"){
-        // self.WaitAndRun(".profile-hover", "QueryServer");
         self.WaitAndRun(".profile-hover", self.QueryServer);
       }
     });
@@ -268,7 +271,7 @@ BEK.prototype.CreateGUI = function(){
       <div class="tabs"></div>
     </div>
     <div class="col-right">
-      <div class="refreshNotice">Click here to save the changes.</div>
+      <div id="refreshNotice">Click here to save the changes.</div>
       <div class="scroll-region"></div>
     </div>
   </div>
@@ -288,13 +291,14 @@ BEK.prototype.CreateGUI = function(){
 BEK.prototype.CreateFeatures = function(){
   var self = this;
   var tabMetaData = {
-    "tabGroup":      null,
-    "tab":           null,
-    "category":      null,
-    "label":         null,
-    "tooltip":       null,
-    "options":       null,
-    "defaultOption": null
+    "tabGroup": null,
+    "tab":      null,
+    "category": null,
+    "label":    null,
+    "tooltip":  null,
+    "type":     null, // toggle, color, {"type": "value", "min": 100, "max": 200}
+    "starting": null,
+    "off":      null, // The value needed for this to be considered off (null if it can't be disabled)
   };
 
   //////////////////////
@@ -304,57 +308,29 @@ BEK.prototype.CreateFeatures = function(){
     "tabGroup": "Core Mods",
     "tab":      "LoL Boards",
     "category": "User Identities",
-    "label":    "Avatars",
-    "tooltip":  "The size of avatars",
-    "options":  [
-      "100|100x100",
-      "125|125x125",
-      "150|150x150",
-      "175|175x175",
-      "200|200x200"
-    ],
-    "defaultOption": "100"
+    "label":    "Avatar Size",
+    "tooltip":  "The size of avatars. It's recommended that you input a value between 100 and 200. Click on this button to reset the value to 100. This feature can't be disabled.",
+    "type":     {"type": "value", "min": 100, "max": 200},
+    "starting": "100",
+    "off":      null
   };
 
   self.CreateFeature(featureMetaData, function(option){
-    // ?
   });
 
-  ///////////////////////////////
-  // Feature: Fallback Avatars //
-  ///////////////////////////////
-  // featureMetaData = {
-  //   "tabGroup": "Core Mods",
-  //   "tab":      "LoL Boards",
-  //   "category": "User Identities",
-  //   "label":    "Fallback Avatars",
-  //   "tooltip":  "The avatar to use when a person doesn't have a BEK avatar.",
-  //   "options":  [
-  //    "off|Disable",
-  //    "1|Trident (Dark)",
-  //    "2|Trident (Light)",
-  //    "3|Trident (Parchment)",
-  //    "4|Poro (Dark)",
-  //    "5|Poro (Light)",
-  //    "6|Poro (Parchment)",
-  //    "7|Happy Cloud (Dark)",
-  //    "8|Happy Cloud (Light)",
-  //    "9|Happy Cloud (Parchment)"
-  //   ],
-  //   "defaultOption": "off"
-  // };
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "User Identities",
+    "label":    "Square Avatars",
+    "tooltip":  "Enable this if you want square avatars in posts, rather than circular avatars.",
+    "type":     {"type": "toggle"},
+    "starting": "off",
+    "off":      "off"
+  };
 
-  // self.CreateFeature(featureMetaData, function(option){
-  //   if     (option == "1") fallbackAvatar = self.BEKgfx + "no-avatar-trident-dark.gif";
-  //   else if(option == "2") fallbackAvatar = self.BEKgfx + "no-avatar-trident-light.gif";
-  //   else if(option == "3") fallbackAvatar = self.BEKgfx + "no-avatar-trident-parchment.gif";
-  //   else if(option == "4") fallbackAvatar = self.BEKgfx + "no-avatar-poro-dark.gif";
-  //   else if(option == "5") fallbackAvatar = self.BEKgfx + "no-avatar-poro-light.gif";
-  //   else if(option == "6") fallbackAvatar = self.BEKgfx + "no-avatar-poro-parchment.gif";
-  //   else if(option == "7") fallbackAvatar = self.BEKgfx + "no-avatar-dark.gif";
-  //   else if(option == "8") fallbackAvatar = self.BEKgfx + "no-avatar-light.gif";
-  //   else if(option == "9") fallbackAvatar = self.BEKgfx + "no-avatar-parchment.gif";
-  // });
+  self.CreateFeature(featureMetaData, function(option){
+  });
 
   ////////////////////////////////////////
   // Feature: Diamond only, no backtalk //
@@ -365,8 +341,9 @@ BEK.prototype.CreateFeatures = function(){
     "category": "User Identities",
     "label":    "No Backtalk",
     "tooltip":  "Diamond only, no backtalk",
-    "options":  [],
-    "defaultOption": "off"
+    "type":     {"type": "toggle"},
+    "starting": "off",
+    "off":      "off"
   };
 
   self.CreateFeature(featureMetaData, function(option){
@@ -380,6 +357,54 @@ BEK.prototype.CreateFeatures = function(){
     }
   });
 
+  ///////////////////////////
+  // Feature: Upvote color //
+  ///////////////////////////
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "Navigation Enhancements",
+    "label":    "Upvote color",
+    "tooltip":  "Set a custom color for upvoted content. Click on this button to set it to default green.",
+    "type":     {"type": "color"},
+    "starting": "#22b722",
+    "off":      "#22b722"
+  };
+
+  self.CreateFeature(featureMetaData, function(option){});
+
+  /////////////////////////////
+  // Feature: Downvote color //
+  /////////////////////////////
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "Navigation Enhancements",
+    "label":    "Downvote color",
+    "tooltip":  "Set a custom color for downvoted content. Click on this button to set it to default red.",
+    "type":     {"type": "color"},
+    "starting": "#fd3b3b",
+    "off":      "#fd3b3b"
+  };
+
+  self.CreateFeature(featureMetaData, function(option){});
+
+  /////////////////////////////////
+  // Feature: Neutral vote color //
+  /////////////////////////////////
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "Navigation Enhancements",
+    "label":    "Neutral vote color",
+    "tooltip":  "Set a custom color for content that has a score of zero. Click on this button to set it to default blue.",
+    "type":     {"type": "color"},
+    "starting": "#13bbc1",
+    "off":      "#13bbc1"
+  };
+
+  self.CreateFeature(featureMetaData, function(option){});
+
   //////////////////////////////////
   // Feature: Thread highlighting //
   //////////////////////////////////
@@ -388,27 +413,13 @@ BEK.prototype.CreateFeatures = function(){
     "tab":      "LoL Boards",
     "category": "Navigation Enhancements",
     "label":    "Highlight My Threads",
-    "tooltip":  "Highlights your threads a specific color on a board's index",
-    "options":  [
-      "off|Disable",
-      "#000000|Black",
-      "#400000|Red",
-      "#442000|Orange",
-      "#303000|Yellow",
-      "#002800|Green",
-      "#000A50|Blue",
-      "#003737|Indigo",
-      "#3b066b|Purple",
-      "#9400D3|Violet",
-      "#2b1d0e|Brown",
-      "#2d2d2d|Gray"
-    ],
-    "defaultOption": "off"
+    "tooltip":  "Highlights your threads a specific color on a board's index. Click on this button to turn off this feature.",
+    "type":     {"type": "color"},
+    "starting": "#121d27",
+    "off":      "#121d27"
   };
 
-  self.CreateFeature(featureMetaData, function(option){
-    // if(option != "off"){}
-  });
+  self.CreateFeature(featureMetaData, function(option){});
 
   ///////////////////////////////
   // Feature: Enhanced Preview //
@@ -419,15 +430,28 @@ BEK.prototype.CreateFeatures = function(){
     "category": "Navigation Enhancements",
     "label":    "Enhanced Preview",
     "tooltip":  "Improves the preview of threads when you hover your mouse over them",
-    "options":  [],
-    "defaultOption": "on"
+    "type":     {"type": "toggle"},
+    "starting": "on",
+    "off":      "off"
   };
 
-  self.CreateFeature(featureMetaData, function(option){
-    if(option != "off"){
-      // self.enhanced();
-    }
-  });
+  self.CreateFeature(featureMetaData, function(option){});
+
+  ///////////////////////////////
+  // Feature: Enhanced Preview //
+  ///////////////////////////////
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "Other",
+    "label":    "Master Switch",
+    "tooltip":  "Toggle this off to disable all of BEK's visual features (you will still be able to access the control panel).",
+    "type":     {"type": "toggle"},
+    "starting": "on",
+    "off":      "off"
+  };
+
+  self.CreateFeature(featureMetaData, function(option){});
 
   ////////////////////////
   // Feature: Blacklist //
@@ -478,7 +502,6 @@ BEK.prototype.CreateFeatures = function(){
     });
   });
 
-
   ////////////////////////////
   // Feature: Hidden Boards //
   ////////////////////////////
@@ -487,14 +510,16 @@ BEK.prototype.CreateFeatures = function(){
     "Player Behavior",
     "Story, Art, & Sound",
     "Player Recruitment",
-    "Concepts & Creations",
-    "Memes & Games",
-    "Let's Talk: Boards",
-    "General Discussion",
     "Esports",
+    "Concepts & Creations",
+    "Streams & Videos",
+    "General Discussion",
+    "Memes & Games",
     "Roleplay",
     "Mechs vs Minions",
-    "Report a Bug"
+    "Help & Support",
+    "Report a Bug",
+    "Client Discussion"
   ];
 
   for(var i = 0; i < naBoards.length; i++){
@@ -506,8 +531,8 @@ BEK.prototype.CreateFeatures = function(){
       "category": "Hidden Boards",
       "label":    `${boardName}`,
       "tooltip":  `Turn this on to hide ${boardName} from the main page`,
-      "options":  [],
-      "defaultOption": "off"
+      "type":     {"type": "toggle"},
+      "starting": "off"
     };
 
     self.CreateFeature(featureMetaData, function(option){}, self.data["hiddenBoards"]);
@@ -518,12 +543,12 @@ BEK.prototype.CreateFeatures = function(){
   /////////////////////////////
   featureMetaData = {
     "tabGroup": "Miscellaneous",
-    "tab":      "Reset"
+    "tab":      "Stuff"
   };
 
   self.CreateTab(featureMetaData, function(option){
-    $(`[tab="miscellaneous-reset"]`).click(function(){
-      var groupView = $(`[group-view="miscellaneous-reset"]`)[0];
+    $(`[tab="miscellaneous-stuff"]`).click(function(){
+      var groupView = $(`[group-view="miscellaneous-stuff"]`)[0];
 
       var content = `
       <div style="margin-bottom: 8px;"><input id="ResetSettings" type="button" value="Reset all settings"></div>
@@ -557,58 +582,49 @@ BEK.prototype.CreateFeatures = function(){
     });
   });
 
-  // ////////////
-  // // SAMPLE //
-  // ////////////
-  // featureMetaData = {
-  //   "tabGroup": "Core Mods",
-  //   "tab":      "LoL Boards",
-  //   "category": "User Identities",
-  //   "label":    "Dropdown Test",
-  //   "tooltip":  "This is the tooltip for Dropdown Test",
-  //   "options":  [
-  //     "off|Disable",
-  //     "1|Option One",
-  //     "2|Second choice",
-  //     "3|Third is great",
-  //     "4|Numbah four",
-  //     "5|Fifth place",
-  //     "6|Six sticks",
-  //     "7|Probably seven",
-  //     "8|Eight is great",
-  //     "9|A fine nine",
-  //     "10|Final ten"
-  //   ],
-  //   "defaultOption": "off"
-  // };
-  // self.CreateFeature(featureMetaData, function(option){});
-
-  // featureMetaData = {
-  //   "tabGroup": "Core Mods",
-  //   "tab":      "LoL Boards",
-  //   "category": "User Identities",
-  //   "label":    "On Off Test",
-  //   "tooltip":  "This is the tooltip for On Off Test",
-  //   "options":  [],
-  //   "defaultOption": "off"
-  // };
-  // self.CreateFeature(featureMetaData, function(option){});
-
   // Register the hotkey ~ to toggle the BEK panel on and off
   self.hotkeys[self.data["togglePanel"]] = function(state, event){
     if(state === "keyup" && !$("input").is(":focus") && !$("textarea").is(":focus"))
       self.PanelToggle();
   };
 
-  // DEBUG: Clear all saved data when the "1" key is pressed
-  // self.hotkeys["49"] = function(state, event){
-  //   if(state === "keyup" && !$("input").is(":focus") && !$("textarea").is(":focus")){
-  //     Clear();
-  //     alert("Data cleared!");
-  //   }
+  return;
+
+  ///////////////////////////////
+  // Feature: Fallback Avatars //
+  ///////////////////////////////
+  // featureMetaData = {
+  //   "tabGroup": "Core Mods",
+  //   "tab":      "LoL Boards",
+  //   "category": "User Identities",
+  //   "label":    "Fallback Avatars",
+  //   "tooltip":  "The avatar to use when a person doesn't have a BEK avatar.",
+  //   "options":  [
+  //    "off|Disable",
+  //    "1|Trident (Dark)",
+  //    "2|Trident (Light)",
+  //    "3|Trident (Parchment)",
+  //    "4|Poro (Dark)",
+  //    "5|Poro (Light)",
+  //    "6|Poro (Parchment)",
+  //    "7|Happy Cloud (Dark)",
+  //    "8|Happy Cloud (Light)",
+  //    "9|Happy Cloud (Parchment)"
+  //   ],
+  //   "defaultOption": "off"
   // };
 
-  return;
+  // self.CreateFeature(featureMetaData, function(option){
+  //   if     (option == "1") fallbackAvatar = self.BEKgfx + "no-avatar-trident-dark.gif";
+  //   else if(option == "2") fallbackAvatar = self.BEKgfx + "no-avatar-trident-light.gif";
+  //   else if(option == "3") fallbackAvatar = self.BEKgfx + "no-avatar-trident-parchment.gif";
+  //   else if(option == "4") fallbackAvatar = self.BEKgfx + "no-avatar-poro-dark.gif";
+  //   else if(option == "5") fallbackAvatar = self.BEKgfx + "no-avatar-poro-light.gif";
+  //   else if(option == "6") fallbackAvatar = self.BEKgfx + "no-avatar-poro-parchment.gif";
+  //   else if(option == "7") fallbackAvatar = self.BEKgfx + "no-avatar-dark.gif";
+  //   else if(option == "8") fallbackAvatar = self.BEKgfx + "no-avatar-light.gif";
+  //   else if(option == "9") fallbackAvatar = self.BEKgfx + "no-avatar-parchment.gif";
+  // });
 
   //////////////////////////////
   // Feature: Enhanced Voting //
@@ -659,26 +675,6 @@ BEK.prototype.CreateFeatures = function(){
   tooltip  = "Replaces the default thread preview tooltip with a more visible and enhanced one.";
   CreateFeature("Enhanced Thread Preview", "_enhancedThreadPreview", "", "on", tooltip, tabgroup, tab, category, function(option){
     enhancedThreadPreview = option;
-  });
-
-  //////////////////////////////////
-  // Feature: Thread Highlighting //
-  //////////////////////////////////
-  category = "Navigation Enhancements";
-  tooltip  = "Threads created by you will have a colored background to stand out from the rest.";
-  options = ["off|Disable",
-             "#000000|Black",
-             "#400000|Red",
-             "#442000|Orange",
-             "#303000|Yellow",
-             "#002800|Green",
-             "#003737|Cyan",
-             "#000A50|Blue",
-             "#551A8B|Purple",
-             "#9400D3|Violet"];
-
-  CreateFeature("Highlight My Threads", "_threadHighlight", options, "#000000", tooltip, tabgroup, tab, category, function(option){
-    highlightMyThreads = option;
   });
 
   ///////////////////////////////////
@@ -1197,71 +1193,31 @@ BEK.prototype.CreateTab = function(featureMetaData, callback){
 // CreateFeature: Used within the CreateFeatures function //
 ////////////////////////////////////////////////////////////
 BEK.prototype.CreateFeature = function(featureMetaData, callback, mod = null){
-  var self          = this;
-
-  var storage = self.data;
+  var self    = this;
+  var storage = self["data"];
   if(mod)
     storage = mod;
 
-  var tabGroup      = featureMetaData["tabGroup"];
-  var tab           = featureMetaData["tab"];
-  var category      = featureMetaData["category"];
-  var label         = featureMetaData["label"];
-  var tooltip       = featureMetaData["tooltip"];
-  var options       = featureMetaData["options"];
-  var defaultOption = featureMetaData["defaultOption"];
-  var hasDropDown   = "false";
-  var optionsType   = "binary";
-  var optionsKeys   = [];
-  var optionsVals   = [];
-  var currentKey    = storage[label];
-  var currentVal    = null;
-  var validOption   = false;
-  var optionList    = "";
-  var listhtml      = "";
-  var labelContent  = "";
-  var tabGroup2     = tabGroup.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
-  var tab2          = tab.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
-  var category2     = category.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
-  var label2        = label.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
+  var tabGroup     = featureMetaData["tabGroup"];
+  var tab          = featureMetaData["tab"];
+  var category     = featureMetaData["category"];
+  var label        = featureMetaData["label"];
+  var tooltip      = featureMetaData["tooltip"];
+  var type         = featureMetaData["type"];
+  var starting     = featureMetaData["starting"];
+  var off          = featureMetaData["off"];
+  var value        = null;
+  var listhtml     = "";
+  var tabGroup2    = tabGroup.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
+  var tab2         = tab.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
+  var category2    = category.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
+  var label2       = label.replace(/[^a-z0-9\s]/gi, "").replace(/[_\s]/g, "-").toLowerCase();
 
-  if(options.length){
-    optionsType = "dropdown";
-    hasDropDown = "true";
+  // If the current key doesn't exist, set it to the starting value
+  if(!(label in storage))
+    storage[label] = starting;
 
-    for(var i = 0; i < options.length; ++i){
-      optionsKeys.push(options[i].split("|")[0]);
-      optionsVals.push(options[i].split("|")[1]);
-    }
-  }else{
-    optionsKeys.push("on");
-    optionsKeys.push("off");
-    optionsVals.push("on");
-    optionsVals.push("off");
-  }
-
-  // Check if the saved value is valid for features with multiple options
-  if(optionsType == "dropdown"){
-    for(var i = 0; i < optionsKeys.length; ++i){
-      if(currentKey == optionsKeys[i]){
-        validOption = true;
-        break;
-      }
-    }
-  }
-  // Check if the saved value is valid for on/off features
-  else if(currentKey == "on" || currentKey == "off")
-    validOption = true;
-
-  if(!validOption)
-      currentKey = storage[label] = defaultOption;
-
-  // Get the index of the current key and then get the value from that index
-  for(var i = 0; i < options.length; i++){
-    var option = options[i].split("|");
-    if(currentKey == option[0])
-    currentVal = option[1];
-  }
+  value = storage[label];
 
   // Create the tabGroup if we need to
   if($(`#bek-panel [tab-group="${tabGroup2}"]`).length == 0){
@@ -1272,7 +1228,7 @@ BEK.prototype.CreateFeature = function(featureMetaData, callback, mod = null){
     `);
   }
 
-  // Create the tab if we need to
+  // Create the tab and groupview if we need to (each tab gets its own groupview)
   if($(`#bek-panel [tab="${tabGroup2}-${tab2}"]`).length == 0){
     $(`#bek-panel [tab-group="${tabGroup2}"]`).append(`
     <div class="tab" tab="${tabGroup2}-${tab2}">
@@ -1280,10 +1236,7 @@ BEK.prototype.CreateFeature = function(featureMetaData, callback, mod = null){
       <div class="indicator"></div>
     </div>
     `);
-  }
 
-  // Create the groupview if we need to
-  if($(`#bek-panel [group-view="${tabGroup2}-${tab2}"]`).length == 0){
     $("#bek-panel .scroll-region").append(`
     <div class="group-view" group-view="${tabGroup2}-${tab2}"></div>
     `);
@@ -1298,49 +1251,52 @@ BEK.prototype.CreateFeature = function(featureMetaData, callback, mod = null){
     `);
   }
 
-  if(options.length){
-    labelContent = `
-    <p>${label}</p>
-    <p>${currentVal}</p>
-    `;
+  var isOff = ``;
 
-    var list = "";
+  if(value == off)
+    isOff = `off`;
 
-    for(var i = 0; i < options.length; i++){
-      var option = options[i].split("|");
-      list += `<li data="${option[0]}">${option[1]}</li>`;
-    }
-
-    optionList = `
-    <div class="option-list">
-      <ul>${list}</ul>
+  var featureLeft = `
+  <div class="feature-left">
+    <div class="indicator"></div>
+    <div class="label"><p>${label}</p></div>
+    <div class="tooltip-data">
+      <span id="tooltip-label">${label}</span><br>
+      <p>${tooltip}</p>
     </div>
-    `;
-  }else{
-    labelContent = `<p>${label}</p>`;
-  }
-
-  var yoloSwag = `
-  <div class="setting" dropdown=${hasDropDown} data=${currentKey}>
-    <div class="data-container">
-      <div class="tooltip-data">
-        <span id="ttlabel">${label}</span><br>
-        <p>${tooltip}</p>
-      </div>
-      <div class="indicator"></div>
-      <div class="label">
-        <div class="content">${labelContent}</div>
-      </div>
-    </div>
-    ${optionList}
   </div>
   `;
 
-  $(`#bek-panel [category="${tabGroup2}-${tab2}-${category2}"]`).append(yoloSwag);
+  var featureRight = ``;
+
+  if(type["type"] == "toggle"){
+    featureRight = ``;
+  }else if(type["type"] == "value"){
+    featureRight = `
+    <div class="feature-right">
+      <input type="number" min=${type["min"]} max=${type["max"]} value=${value}>
+    </div>
+    `;
+  }else if(type["type"] == "color"){
+    featureRight = `
+    <div class="feature-right">
+      <input type="color" value=${value}>
+    </div>
+    `;
+  }
+
+  var feature = `
+  <div class="feature" data=${value} type=${type["type"]} dflt=${starting} offVal=${off} ${isOff}>
+    ${featureLeft}
+    ${featureRight}
+  </div>
+  `;
+
+  $(`#bek-panel [category="${tabGroup2}-${tab2}-${category2}"]`).append(feature);
 
   // Run the feature by callback if it isn't disabled
-  if(currentKey !== "off")
-    callback(currentKey);
+  if(value !== "off")
+    callback(value);
 }
 
 ////////////////////////////////////////////////////////////
@@ -1397,12 +1353,12 @@ BEK.prototype.KeyWatch = function(){
     }
   });
 
-  $("#bek-panel .setting").mouseenter(function(){
+  $("#bek-panel .feature-left").mouseenter(function(){
     $("#bektooltip").html($(this).find(".tooltip-data").html());
     $("#bektooltip").css("opacity", 1);
   });
 
-  $("#bek-panel .setting").mouseleave(function(){
+  $("#bek-panel .feature-left").mouseleave(function(){
     $("#bektooltip").css("opacity", 0);
   });
 
@@ -1413,7 +1369,7 @@ BEK.prototype.KeyWatch = function(){
 
   $("#bek-panel").click(function(event){
     event.stopPropagation();
-    $("#bek-panel .setting").find("ul").hide();
+    // $("#bek-panel .setting").find("ul").hide();
   });
 
   // Register click events and activates the beklink tabs
@@ -1450,63 +1406,95 @@ BEK.prototype.KeyWatch = function(){
     event.preventDefault();
   });
 
-  $("#bek-panel .setting").find("ul").on("mousewheel", function(event){
+  // $("#bek-panel .setting").find("ul").on("mousewheel", function(event){
+  //   event.stopPropagation();
+  //   event.preventDefault();
+  // });
+
+  $("#bek-panel .feature-left").click(function(event){
+    // Reset to default value
     event.stopPropagation();
-    event.preventDefault();
-  });
 
-  $("#bek-panel .setting").click(function(event){
-    event.stopPropagation();
-    if($(this).attr("dropdown") == "true"){
-      if($(this).find("ul").is(":visible"))
-        $(this).find("ul").hide();
-      else{
-        $("#bek-panel .setting").find("ul").hide();
-        $(this).find("ul").show();
-        $(this).find("ul").scrollTop(0);
-        self.InitScrollbar($(this).find("ul"));
-      }
-    }else{
-      var key = $(".data-container > .label > .content > p", this).text();
-      var val = $(this).attr("data");
-      $("#refreshNotice").addClass("visible");
-      if($(this).attr("data") == "off"){
-        $(this).attr("data", "on");
+    var type = $(this).parent().attr("type");
+    var key  = $(".label > p", this).text();
 
-        if($($(this).parent().find(".category-name")[0]).text() == "Hidden Boards")
-          self.data["hiddenBoards"][key] = "on";
-        else
-          self.data[key] = "on";
-
+    if(type == "toggle"){
+      var current = $(this).parent().attr("data");
+      if(current == "on"){
+        $(this).parent().attr("data", "off");
+        $(this).parent().attr("off", "");
+        self["data"][key] = "off";
         Set(self.data);
       }else{
-        $(this).attr("data", "off");
-
-        if($($(this).parent().find(".category-name")[0]).text() == "Hidden Boards")
-          self.data["hiddenBoards"][key] = "off";
-        else
-          self.data[key] = "off";
-
+        $(this).parent().attr("data", "on");
+        $(this).parent().removeAttr("off");
+        self["data"][key] = "on";
         Set(self.data);
       }
+    }else if(type == "value" || type == "color"){
+      var dflt   = $(this).parent().attr("dflt");
+      $(this).parent().attr("data", dflt);
+      $(this).parent().attr("off", "");
+      self["data"][key] = dflt;
+      $("input", $(this).parent()).val(dflt);
+
+      Set(self.data);
     }
+
+    $("#refreshNotice").addClass("visible");
+
+    // var key = $(".data-container > .label > .content > p", this).text();
+    // var val = $(this).attr("data");
+    // $("#refreshNotice").addClass("visible");
+    // if($(this).attr("data") == "off"){
+    //   $(this).attr("data", "on");
+
+    //   if($($(this).parent().find(".category-name")[0]).text() == "Hidden Boards")
+    //     self.data["hiddenBoards"][key] = "on";
+    //   else
+    //     self.data[key] = "on";
+
+    //   Set(self.data);
+    // }else{
+    //   $(this).attr("data", "off");
+
+    //   if($($(this).parent().find(".category-name")[0]).text() == "Hidden Boards")
+    //     self.data["hiddenBoards"][key] = "off";
+    //   else
+    //     self.data[key] = "off";
+
+    //   Set(self.data);
+    // }
   });
 
-  $("#bek-panel .setting ul li").click(function(){
-    var setting        = $(this).closest(".setting");
-    var previousChoice = $(setting).attr("data");
-    var key            = $(".data-container > .label > .content > p:nth-child(1)", setting).text()
-    var val            = $(this).attr("data");
-    var newText        = $(this).text();
-    if(previousChoice !== val){
-      $(setting).attr("data", val);
-      $(".data-container .label .content p:nth-child(2)", setting).html(newText);
+  $("#bek-panel .feature-right input").change(function(){
+    var type = $(this).attr("type");
+    var key  = $(".label > p", $(this).closest(".feature")).text();
 
-      // SAVE THE SETTING HERE!
-      $("#refreshNotice").addClass("visible");
-
-      self.data[key] = val;
+    if(type == "number"){
+      var min = $(this).attr("min");
+      var max = $(this).attr("max");
+      var val = $(this).val();
+      if(val < min) val = min;
+      if(val > max) val = max;
+      $(this).val(val);
+      self["data"][key] = val;
+      $(this).closest(".feature").attr("data", val);
       Set(self.data);
+      $("#refreshNotice").addClass("visible");
+    }if(type == "color"){
+      var val    = $(this).val();
+      var offVal = $(this).closest(".feature").attr("offVal");
+
+      if(val == offVal)
+        $(this).closest(".feature").attr("off", "");
+      else
+        $(this).closest(".feature").removeAttr("off");
+
+      self["data"][key] = val;
+      $(this).closest(".feature").attr("data", val);
+      Set(self.data);
+      $("#refreshNotice").addClass("visible");
     }
   });
 
@@ -1560,6 +1548,8 @@ BEK.prototype.QueryServer = function(self){
   // Features that can be done right away without needing data from the BEK server
   self.WaitAndRun(".riot-voting > .total-votes", self.ColorVotes);
   self.WaitAndRun(".riot-voting > .total-votes", self.HoverVotes);
+  self.WaitAndRun(".riot-voting > .total-votes", self.SquareAvatars);
+  self.FormatAllPostsPRE();
 
   self.users   = [];
   self.regions = [];
@@ -1568,10 +1558,6 @@ BEK.prototype.QueryServer = function(self){
     var username = this.getElementsByClassName("username")[0].textContent;
     var region   = this.getElementsByClassName("realm")[0].textContent;
         region   = region.substring(1, region.length - 1);
-
-    // BEK staff have special gradient names, so I need to extract them using this method
-    if(this.getElementsByClassName("pxg-set").length > 0)
-      username = this.getElementsByClassName("pxg-set")[0].childNodes[0].textContent;
 
     self.users.push(username);
     self.regions.push(region);
@@ -1584,12 +1570,12 @@ BEK.prototype.QueryServer = function(self){
   formData.append("regions", self.regions);
 
   SendToServer(`${domain}/database`, formData, function(data){
-    self.results        = data.records;
-    self.BEKtweets = data.announcements;
-    BEKevent       = data.event;
-    var unixTime   = Math.floor(Date.now() / 1000);
+    console.log(data);
+    self.results = data.records;
+    // self.BEKtweets = data.announcements;
+    // BEKevent       = data.event;
+    // var unixTime   = Math.floor(Date.now() / 1000);
 
-    // THIS FEATURE TEMPORARILY DISABLED!
     // if((unixTime > BEKevent.start) && (unixTime < BEKevent.end))
     if(0){
       var NavBarEvent = document.createElement("li");
@@ -1639,52 +1625,34 @@ BEK.prototype.QueryServer = function(self){
     } // SKIP CHECKING FOR VERSIONS (for now at least)
 
     if(self.page == "Thread")
-      self.FormatAllPosts(true);
-
-    // $.event.trigger({type: "tweetsLoaded"});
+      self.FormatAllPostsPOST();
   });
 }
 
-//////////////////////////////////////////////////////////////////////
-// FormatAllPosts: Calls FormatSinglePost on every post that exists //
-//////////////////////////////////////////////////////////////////////
-BEK.prototype.FormatAllPosts = function(BEKData = false){
+/////////////////////////////////////////////////////////////////////////
+// FormatAllPostsPRE: Calls FormatSinglePost on every post that exists //
+/////////////////////////////////////////////////////////////////////////
+BEK.prototype.FormatAllPostsPRE = function(){
   var self = this;
 
-  // Remove all "isOP" classes from the page to prevent names in regular posts from being white
-  $("*").removeClass("isOP");
+  // Global CSS rules
+  // $(".op-container > .masthead > .discussion-title > .author-info > .inline-profile > .realm").css("display", "none !important");
+  // $(".riot-apollo .profile-hover").css("visibility", "hidden");
 
-  // This removes the thing that mimimizes posts in Discussion View
-  // This isn't desirable because it restricts freedom for Discussion View
-  $(document).find(".toggle-minimized").remove();
-
-  if(!BEKData){
-    if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
-      $(".op-container").each(function(){
-        self.FormatSinglePost2(this, true);
-      });
-    }
-
-    $(".body-container").each(function(){
-      self.FormatSinglePost2(this, false);
-    });
-  }else{
-    if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
-      $(".op-container").each(function(){
-        self.FormatSinglePost2(this, true);
-      });
-    }
-
-    $(".body-container").each(function(){
-      // Only execute the function if the post is not deleted
-      if(!$($(this).find(".deleted")[0]).is(":visible"))
-        self.FormatSinglePost2(this, false);
+  if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
+    $(".op-container").each(function(){
+      self.FormatSinglePostGeneric(this, true);
     });
   }
 
+  $(".body-container").each(function(){
+    // Only execute the function if the post is not deleted
+    if(!$($(this).find(".deleted")[0]).is(":visible"))
+      self.FormatSinglePostGeneric(this, false);
+  });
+
   // isMinimized
   $(".toggle-minimized").click(function(){
-    alert("DO NOT MINIMIZE POSTS YET! BEK still needs to properly handle them...");
     // Put everything in a container and then hide it
 
     var post = $(this).parent()[0];
@@ -1729,33 +1697,43 @@ BEK.prototype.FormatAllPosts = function(BEKData = false){
 
       $(list).each(function(){
         $(".body-container").each(function(){
-          FormatSinglePost1(this, false);
-          FormatSinglePost2(this, false);
+          FormatSinglePostGeneric(this, false);
           // ColorVotes();
           // HoverVotes();
           $(".toggle-minimized").each(function(){$(this).css("z-index", "1");});
         });
       });
     }
-  })
+  });
 }
 
-///////////////////////////////
-// FormatSinglePost1: DELETE //
-///////////////////////////////
-BEK.prototype.FormatSinglePost1 = function(obj, op){
-  // alert("FormatSinglePost1");
-  // alert("FormatSinglePost1");
+//////////////////////////////////////////////////////////////////////////
+// FormatAllPostsPOST: Calls FormatSinglePost on every post that exists //
+//////////////////////////////////////////////////////////////////////////
+BEK.prototype.FormatAllPostsPOST = function(){
+  var self = this;
+
+  if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
+    $(".op-container").each(function(){
+      self.FormatSinglePostWithData(this, true);
+    });
+  }
+
+  $(".body-container").each(function(){
+    // Only execute the function if the post is not deleted
+    if(!$($(this).find(".deleted")[0]).is(":visible"))
+      self.FormatSinglePostWithData(this, false);
+  });
 }
 
-/////////////////////////////////////////////////////////////////
-// FormatSinglePost2: Inserts BEK data into the formatted post //
-/////////////////////////////////////////////////////////////////
-BEK.prototype.FormatSinglePost2 = function(obj, op){
+//////////////////////////////////////////////////////////////////
+// FormatSinglePostGeneric: Generic formatting without BEK data //
+//////////////////////////////////////////////////////////////////
+BEK.prototype.FormatSinglePostGeneric = function(obj, op){
   var self      = this;
-  var usernameT = obj.getElementsByClassName("username")[0].textContent;
-  var regionT   = obj.getElementsByClassName("realm")[0].textContent;
-  regionT       = regionT.substring(1, regionT.length - 1);
+  var usernameT = $($(".username", obj)[0]).text();
+  var regionT   = $($(".realm",    obj)[0]).text();
+  regionT       = regionT.substring(1, regionT.length - 1); // Removes parenthesis () from region
 
   // Hide blacklisted posts
   if(`${usernameT} (${regionT})` in self.data["blacklist"]){
@@ -1763,99 +1741,77 @@ BEK.prototype.FormatSinglePost2 = function(obj, op){
     return;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // Define standard variables for this scope
-  var riotVoting    = $(obj).parent()[0].getElementsByClassName("riot-voting")[0];
-  var inlineProfile = obj.getElementsByClassName("inline-profile")[0];
-  var profHover     = obj.getElementsByClassName("profile-hover")[0];
-  var timeago       = obj.getElementsByClassName("timeago")[0];
-  var icon          = obj.getElementsByTagName("img")[0];
-  var body          = obj.getElementsByClassName("body")[0];
-  var isRioter      = obj.getElementsByClassName("isRioter")[0];
-  var username      = obj.getElementsByClassName("username")[0];
-  var region        = obj.getElementsByClassName("realm")[0];
-  var myIcon        = $(".profile-hover > span:nth-child(1)", obj)[0];
-
-  var colorrr = $(username).css("color");
-
-  // Get the correct element depending on if the poster is a regular user or belongs to a special group
-  var tinyIcon;
+  var spanIcon      = $(".inline-profile > a > span", obj)[0];
+  var avatarImg     = $(".inline-profile > a > span > img", obj)[0];
+  var body          = $(".body", obj)[0];
+  var header        = $(".header", obj)[0];
+  var username      = $(".username", obj)[0];
+  var profileHover  = $("[data-apollo-widget='profile-hover']", obj)[0];
+  var commentBox    = $(obj).parent();
+  var avatarSize    = parseInt(self.data["Avatar Size"]);
 
   if($(".riot-fist", obj).length){
-    // console.log("RIOTER");
-    var prependThis = `<img src="https://avatar.leagueoflegends.com/NA/sdsdfdfs.png" style="width: 100px; height: 100px;">`;
+    var prependThis = `<img src="https://i.imgur.com/N3k1yiC.png" style="width: ${avatarSize}px; height: auto;">`;
     $($(".riot-fist", obj)[0]).prepend(prependThis);
-    $($(".riot-fist", obj)[0]).css("background-image", "url('http://i.imgur.com/BBis2Vu.jpg')", "!important");
+    // $($(".riot-fist", obj)[0]).css("background-image", "", "!important");
   }
-
-  if((typeof (tinyIcon = $(".icon", obj)[0])) == "undefined")
-    tinyIcon = $(".userGroupIcon", obj)[0];
-
-  // Pop up for when you hover your mouse over a person's name/avatar (only do this once for the op)
-  $(tinyIcon).css("z-index", "1");
-
-  // Modify avatar size here
-  var avatarSize = self.data["Avatars"];
-  // $(icon).css("width",  avatarSize, "!important");
-  // $(icon).css("height", avatarSize, "!important");
-  $(icon).css("width",  avatarSize + "px", "!important");
-  $(icon).css("height", avatarSize + "px", "!important");
-  $(myIcon).css("width", avatarSize + "px", "!important");
-
-  var REEEEEEEE = 0;
 
   // Do NOT do these if a badge-container already exists
   // if(!$(".badge-container", obj).length){
   if(op){
-    // if OP, do #content
-    $("#content").css("padding-left", 75 + parseInt(avatarSize) + "px", "!important");
-    $("#content").css("min-height",   50 + parseInt(avatarSize) + "px", "!important");
-    REEEEEEEE = $("#content")[0];
+    $(spanIcon).css("position", "relative");
+    $(spanIcon).css("top",      "60px");
+    $(spanIcon).css("left",     "-65px");
 
-    // Adjust length of username
-    // 100 =>  0.0
-    // 125 => 12.5
-    // 150 => 25.0
-    // 175 => 37.5
-    // 200 => 50.0
-    // Formula: (avatarSize - 100) / 2
-    // $(".username", obj).css("left", parseInt((avatarSize - 100) / 2) + "px", "!important");
+    $(avatarImg).css("width",  avatarSize + "px");
+    $(avatarImg).css("height", "auto");
+
+    $("#content").css("padding-left", avatarSize + 15 + "px");
+    $("#content").css("padding-top", "0px");
   }else{
-    // else, do .body    (20 + avatarSize)
+    $(spanIcon).css("position", "relative");
+    $(spanIcon).css("top",      "30px");
 
-    var testingStuff = parseInt(avatarSize);
-    if(testingStuff < 144)
-      testingStuff = 144;
+    $(avatarImg).css("width",  avatarSize + "px");
+    $(avatarImg).css("height", "auto");
 
-    // Set width of .profile-hover to testingStuff
-    $(".profile-hover", obj).css("width", testingStuff, "!important");
+    $(body).css("padding-left", avatarSize + 10 + "px");
+    $(body).css("margin-top", "0px");
+    $(body).css("min-height", avatarSize - 25 + "px");
 
-    $(".body", obj).css("padding-left", 20 + testingStuff + "px", "!important");
-    $(".body", obj).css("min-height",   avatarSize        + "px", "!important");
-    REEEEEEEE = $(".body", obj)[0];
+    $(header).css("position", "relative");
+    $(header).css("top", "-15px");
+
+    $(username).css("margin",     "0");
+    $(username).css("padding",    "0");
+
+    $(profileHover).css("position", "relative");
+    $(profileHover).css("left",     "-30px");
+
+    $(commentBox).css("padding-bottom", "8px");
   }
   // }
 
   // Pop-up thing that appears when you hover over a user
-  $(tinyIcon).each(function(){
+  $(profileHover).each(function(){
     $(this).hover(function(){
       var avatar = $($(this).find("img")[0]).attr("src");
 
       // Now create and append to innerDiv
-      innerDiv = document.createElement("div");
-      innerDiv.className = "bek-profile-popup";
+      var popup = `
+      <div class="bek-profile-popup" style="position: absolute; border: 1px solid black; width: 100px; height: 112px; top: 26px; left: ${avatarSize}px; background-color: white; padding-left: 4px; font-size: 14px; text-align: left; line-height 17px;">
+      <a href="#" id="prfle" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Profile</a><br>
+      <a href="#" id="avatr" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Avatar</a><br>
+      <a href="#" id="cname" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">Copy Name</a><br>
+      <a href="#" id="lolnx" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">LoLNexus</a><br>
+      <a href="#" id="opgg"  style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">OP.GG</a><br>
+      <a href="#" id="black" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">Blacklist</a>
+      </div>
+      `;
 
-      innerDiv.innerHTML = `<a href="#" id="prfle" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Profile</a><br>
-                            <a href="#" id="avatr" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Avatar</a><br>
-                            <a href="#" id="cname" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">Copy Name</a><br>
-                            <a href="#" id="lolnx" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">LoLNexus</a><br>
-                            <a href="#" id="opgg"  style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">OP.GG</a><br>
-                            <a href="#" id="black" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">Blacklist</a>`;
+      $(this).append(popup);
 
-      this.appendChild(innerDiv);
-
-      $(profHover).click(function(event){
+      $(".bek-profile-popup").click(function(event){
         event.preventDefault();
         event.stopPropagation();
       });
@@ -1900,10 +1856,10 @@ BEK.prototype.FormatSinglePost2 = function(obj, op){
           window.getSelection().addRange(range);
         }
 
+        alert("Name copied");
         document.execCommand("copy");
         tempElement.remove();
         innerDiv.remove();
-        alert("Name copied");
       });
 
       $("#lolnx").click(function(event){
@@ -1932,17 +1888,42 @@ BEK.prototype.FormatSinglePost2 = function(obj, op){
           // TODO: Update the blacklist if it's the current active tab
         });
       });
-
-      // Fade the BEK popup box in
-      $(innerDiv).fadeIn(200);
     }, function(){
-      innerDiv.remove();
+      $(".bek-profile-popup").remove();
     });
   });
 
-  // BEK staff have special gradient names, so I need to extract them using this method
-  // if(obj.getElementsByClassName("pxg-set").length > 0)
-  //   usernameT = inlineProfile.getElementsByClassName("pxg-set")[0].childNodes[0].textContent;
+  // self.RollDice(body);
+}
+
+////////////////////////////////////////////////////////////////////////
+// FormatSinglePostWithData: Inserts BEK data into the formatted post //
+////////////////////////////////////////////////////////////////////////
+BEK.prototype.FormatSinglePostWithData = function(obj, op){
+  var self      = this;
+  var usernameT = $($(".username", obj)[0]).text();
+  var regionT   = $($(".realm",    obj)[0]).text();
+  regionT       = regionT.substring(1, regionT.length - 1); // Removes parenthesis () from region
+
+  var spanIcon      = $(".inline-profile > a > span", obj)[0];
+  var avatarImg     = $(".inline-profile > a > span > img", obj)[0];
+  var body          = $(".body", obj)[0];
+  var header        = $(".header", obj)[0];
+  var username      = $(".username", obj)[0];
+  var profileHover  = $("[data-apollo-widget='profile-hover']", obj)[0];
+  var commentBox    = $(obj).parent();
+  var avatarSize    = parseInt(self.data["Avatar Size"]);
+
+  var avatar = "";
+  var staff  = 0;
+  var title  = "";
+  var badge  = "";
+
+  // Assign avatars
+  // if(typeof isRioter !== "undefined")
+  //   self.AssignAvatar(obj, true, avatar, tinyIcon);
+  // else
+  //   self.AssignAvatar(obj, false, avatar, tinyIcon);
 
   // If the current user isn't in the BEK database, assign stuff
   if(typeof self.results[usernameT] !== "undefined"){
@@ -1955,69 +1936,38 @@ BEK.prototype.FormatSinglePost2 = function(obj, op){
     var footer;       // not op
 
     // Define user data variables
-    var avatar = self.results[usernameT][regionT].avatar;
-    var staff  = self.results[usernameT][regionT].staff;
-    var title  = self.results[usernameT][regionT].title;
-    var badge  = self.results[usernameT][regionT].badge;
-
-    var innerDiv;
-
-    // Assign avatars
-    if(typeof isRioter !== "undefined")
-      self.AssignAvatar(obj, true, avatar, tinyIcon);
-    else
-      self.AssignAvatar(obj, false, avatar, tinyIcon);
-
-    // Alter text colors for names and titles
-    // if(op === false){
-    //   if(isRioter)
-    //     profHover.style.setProperty("color", "#AE250F", "important"); // Makes sure that Rioter's titles are red
-    //   else if(staff == "1")
-    //     profHover.style.setProperty("color", "#0000FF", "important"); // BEK staff
-    //   else
-    //     profHover.style.setProperty("color", "#94724D", "important"); // Regular users
-    // }
-
-    // Username: All Posts
-    if(1){
-      if(staff == "1"){
-        // Gradient names have problems where if they are too long and have a space, they will
-        // go on a second line. So if a name is a certain length (>= 14) and has at least one
-        // space in it, decrease the font size to 12
-        if(usernameT.length >= 12 && (usernameT.indexOf(" ") >= 0))
-          username.style.setProperty("font-size", "12px", "important");
-
-        $(username).GradientText({
-          step:    10,
-          colors: ["#68BAFF", "#008AFF", "#68BAFF"],
-          dir:    "x"
-        });
-      }
-    }
+    avatar = self.results[usernameT][regionT]["avatar"];
+    staff  = self.results[usernameT][regionT]["staff"];
+    title  = self.results[usernameT][regionT]["title"];
+    badge  = self.results[usernameT][regionT]["badge"];
+    self.AssignAvatar(obj, avatar, false);
   }
 
-  self.RollDice(body);
-  self.GetBadgesAndTitle(usernameT, regionT, myIcon, staff, title, badge, REEEEEEEE);
+  self.GetBadgesAndTitle(usernameT, regionT, spanIcon, body, staff, title, badge);
+  // self.GetBadgesAndTitle(usernameT, regionT, myIcon, staff, title, badge, REEEEEEEE);
 }
 
 /////////////////////////////////////
 // AssignAvatar: Assigns an avatar //
 /////////////////////////////////////
-BEK.prototype.AssignAvatar = function(obj, isRioter, avatar, tinyIcon){
+BEK.prototype.AssignAvatar = function(obj, avatar, isRioter){
   if(isRioter){
      if(typeof avatar !== "undefined"){
        if(avatar.slice(-5) == ".webm"){
          FormatWebmAvatar(obj, avatar);
        }else{
-         obj.getElementsByTagName("img")[0].setAttribute("src", avatar);
+         // obj.getElementsByTagName("img")[0].setAttribute("src", avatar);
+         $("img", obj)[0].attr("src", avatar);
        }
      }
   }else{
     if(typeof avatar !== "undefined"){
-      if(avatar.slice(-5) == ".webm")
+      if(avatar.slice(-5) == ".webm"){
         FormatWebmAvatar(obj, avatar);
-      else
-        obj.getElementsByTagName("img")[0].setAttribute("src", avatar);
+      }else{
+        // obj.getElementsByTagName("img")[0].setAttribute("src", avatar);
+        $($("img", obj)[0]).attr("src", avatar);
+      }
     }
     // else if(fallbackAvatar != "off")
     //   obj.getElementsByTagName("img")[0].setAttribute("src", fallbackAvatar);
@@ -2027,18 +1977,25 @@ BEK.prototype.AssignAvatar = function(obj, isRioter, avatar, tinyIcon){
 ////////////////////////////////////////////////////////////////////////
 // GetBadgesAndTitle: Gets a user's badges and title using Riot's API //
 ////////////////////////////////////////////////////////////////////////
-BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, staff, title, badge, REEEEEEEE){
+// BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, staff, title, badge, REEEEEEEE){
+BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, staff, title, badge){
   var self       = this;
-  var avatarSize = self.data["BEK Avatars"];
+  var avatarSize = parseInt(self.data["Avatar Size"]);
 
-  $.getJSON("https://boards." + self.platformRegion + ".leagueoflegends.com/api/users/" + regionT + "/" + usernameT + "?include_profile=true", function(api){
+  // Check if the badge container already exists, and return if it does
+  if(false)
+    return;
+
+  // $.getJSON("https://boards." + self.platformRegion + ".leagueoflegends.com/api/users/" + regionT + "/" + usernameT + "?include_profile=true", function(api){
+  $.getJSON("https://boards." + self.platformRegion + ".leagueoflegends.com/api/users/" + regionT + "/" + usernameT, function(api){
     if(!profHover.getElementsByClassName("badge-container")[0] && !profHover.getElementsByClassName("title")[0]){
       var badgeContainer;
-      var badgeSize = "36px"; // Badges are 36x36 and 4 badges per line
+      var badgeSize = "36px"; // Badges are 36x36 and 3 badges per line
       badgeContainer = document.createElement("div");
       badgeContainer.className = "badge-container";
-      badgeContainer.style.setProperty("min-width",   "144px", "important");
+      badgeContainer.style.setProperty("min-width",   avatarSize + 8 + "px", "important");
       badgeContainer.style.setProperty("line-height", "0",     "important");
+      badgeContainer.style.setProperty("text-align", "center",     "important");
       profHover.appendChild(badgeContainer);
 
       var data;
@@ -2106,9 +2063,12 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, staff,
 
       // Check the height of the badge container
       if(wereThereBadges){
-        var currentHeight = parseInt($(REEEEEEEE).css("min-height"));
-        currentHeight += parseInt($($(badgeContainer)[0]).css("height")); // Increase the min-height by height of badge container
-        $(REEEEEEEE).css("min-height", currentHeight + "px", "important")
+        // var currentHeight = parseInt($(REEEEEEEE).css("min-height"));
+
+        // Increase the min-height by height of badge container
+        // currentHeight += parseInt($($(badgeContainer)[0]).css("height"));
+
+        // $(REEEEEEEE).css("min-height", currentHeight + "px", "important")
       }
 
       // Apply a title if you have one
@@ -2119,6 +2079,8 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, staff,
         divTitle.textContent = title;parseInt(avatarSize)
         divTitle.style.setProperty("overflow",    "hidden",                                     "important");
         divTitle.style.setProperty("font-family", `"Constantia", "Palatino", "Georgia", serif`, "important");
+        divTitle.style.setProperty("width", `${avatarSize + 8}px`, "important");
+        divTitle.style.setProperty("text-align", "center", "important");
 
         profHover.appendChild(divTitle);
 
@@ -2132,18 +2094,25 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, staff,
         if(staff == "1"){
           divTitle.style.setProperty("font-size", "26px", "important");
 
-          $(divTitle).GradientText({
-            step: 10,
-            colors: ["#68BAFF", "#008AFF", "#68BAFF"],
-            dir: "x"
-          });
-
           if(title.length >= 16)
             divTitle.style.setProperty("font-size", "13px", "important");
           else
             divTitle.style.setProperty("font-size", "14px", "important");
         }
       }
+
+      // New minimum height for .body = avatarSize - 25 + $(".badge-container").height() + $(".title").height() + 4
+      var badgeContainerHeight = 0;
+      var titleHeight          = 0;
+
+      if($(".badge-container", profHover).length)
+        badgeContainerHeight = $(".badge-container", profHover).height();
+
+      if($(".title", profHover).length)
+        titleHeight = $(".title", profHover).height();
+
+      var newMinHeight = avatarSize - 25 + badgeContainerHeight + titleHeight + 2;
+      $(body).css("min-height", newMinHeight + "px");
     }
   });
 }
@@ -2194,11 +2163,13 @@ BEK.prototype.ColorVotes = function(self){
 
   $(totalVotes).each(function(){
     if($(this).html()[0] == "-")
-      this.style.setProperty( "color", "#FF5C5C", "important"); // Make red for downvotes
+      this.style.setProperty( "color", self["data"]["Downvote color"], "important"); // Downvoted content
     else if($(this).html()[0] == "•")
       {} // Do nothing
-    else if($(this).html() != "0" && $(this).html() != "1")
-      this.style.setProperty( "color", "#05E100", "important"); // Make green for upvotes
+    else if($(this).html() == "0")
+      this.style.setProperty( "color", self["data"]["Neutral vote color"], "important"); // Neutral content
+    else
+      this.style.setProperty( "color", self["data"]["Upvote color"], "important"); // Upvoted content
   });
 }
 
@@ -2248,9 +2219,9 @@ BEK.prototype.ShowIndividualVotes = function(self, obj){
 
   if(votingDisplay == "individual")
     upDownDisplay.innerHTML = `
-    <font color="#05E100">${uVotes}</font>
+    <font color="${self["data"]["Upvote color"]}">${uVotes}</font>
     <font color="white">|</font>
-    <font color="#FF5C5C">${dVotes}</font>
+    <font color="${self["data"]["Downvote color"]}">${dVotes}</font>
     `;
   else if(votingDisplay == "total")
     upDownDisplay.innerHTML = `
@@ -2258,6 +2229,16 @@ BEK.prototype.ShowIndividualVotes = function(self, obj){
     `;
 
   $(voteScore).hide();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// ShowIndividualVotes: Shows how many upvotes and downvotes a specific thread/post has //
+//////////////////////////////////////////////////////////////////////////////////////////
+BEK.prototype.SquareAvatars = function(self){
+  if(self["data"]["Square Avatars"] == "off")
+    return;
+
+  $("[data-apollo-widget='profile-hover'] > span > img").css({"border-radius" : "0%"});
 }
 
 ////////////////////////////////////////////////////
@@ -2279,27 +2260,13 @@ BEK.prototype.LoadIndex = function(self){
     if(`${username} ${realm}` in self.data["blacklist"])
       $(this).remove();
   });
-
-  return;
-
-  // RemoveThumbnailBackground();
-  // self.ColorVotes();
-  // self.HoverVotes();
-
-  // if(enhancedThreadPreview == "on")
-  //   EnhancedThreadPreview();
-
-  // if(highlightMyThreads != "off")
-  //   HighlightMyThreads();
-
-  // self.QueryServer();
 }
 
 ///////////////////////////////////////////////////////////////////////
 // HighlightMyThreads: Highlights your threads as black on the index //
 ///////////////////////////////////////////////////////////////////////
 BEK.prototype.HighlightMyThreads = function(self){
-  if(self.data["Highlight My Threads"] == "off")
+  if(self.data["Highlight My Threads"] == "#121d27")
     return;
 
   if(self.page == "Index"){
@@ -2382,7 +2349,7 @@ BEK.prototype.EnhancedThreadPreview = function(self){
           var replaceThing = $(this).find(".title-span").attr("ttdata").replace(/[\n\r]/g, "<br />").replace(/{{champion:??:.*?}}/g, MiniChampionIcons).replace(/{{item:??:.*?}}/g, MiniItemIcons).replace(/{{summoner:??:.*?}}/g, MiniSummonerIcons);
 
           $("#bektooltip").html(`
-            <div id="ttlabel"> ${$(this).find(".username").text()}  </div>
+            <div id="tooltip-label">${$(this).find(".username").text()}</div>
             <div id="loadtime">${$(this).find(".title-span").text()}</div>
             <p>${replaceThing}</p>
             `);
@@ -2540,6 +2507,99 @@ BEK.prototype.RollDice = function(obj){
   });
 }
 
+/////////////////////////////
+// OBSOLETE FUNCTION BELOW //
+//////////////////////////////////////////////////////////////////////
+// FormatAllPosts: Calls FormatSinglePost on every post that exists //
+//////////////////////////////////////////////////////////////////////
+BEK.prototype.FormatAllPosts = function(BEKData = false){
+  alert("YOU SHOULD NOT BE SEEING THIS MESSAGE!");return;
+  var self = this;
+
+  // This removes the thing that mimimizes posts in Discussion View
+  // This isn't desirable because it restricts freedom for Discussion View
+  // $(document).find(".toggle-minimized").remove();
+
+  if(!BEKData){
+    if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
+      $(".op-container").each(function(){
+        self.FormatSinglePost2(this, true);
+      });
+    }
+
+    $(".body-container").each(function(){
+      self.FormatSinglePost2(this, false);
+    });
+  }else{
+    if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
+      $(".op-container").each(function(){
+        self.FormatSinglePost2(this, true);
+      });
+    }
+
+    $(".body-container").each(function(){
+      // Only execute the function if the post is not deleted
+      if(!$($(this).find(".deleted")[0]).is(":visible"))
+        self.FormatSinglePost2(this, false);
+    });
+  }
+
+  // isMinimized
+  $(".toggle-minimized").click(function(){
+    // Put everything in a container and then hide it
+
+    var post = $(this).parent()[0];
+
+    if($(this).parent().hasClass("isMinimized")){
+      // Minimizing the post
+
+      if($(post).find(".hide-post").length == 0){
+        // If the container doesn't exist, make it
+        // Classes:
+        // 0. masthead
+        // 1. toggle-minimized
+        // 2. newline
+        // 3. small
+        // 4. body-container
+        // 5. list
+        // 6. paging
+        //
+        // Put 2-5 in their own span and keep it between 1 and 7
+
+        var testing = document.createElement("span");
+        $(testing).attr("class", "hide-post");
+
+        $(testing).append($(post).find(".new-line")[0]);
+        $(testing).append($(post).find(".small")[0]);
+        $(testing).append($(post).find(".body-container")[0]);
+        $(testing).append($(post).find(".list")[0]);
+
+        // Finally append it to the post
+        $(testing).insertAfter($(post).find(".toggle-minimized")[0]);
+        $(testing).css("display", "none");
+      }else{
+        // If the container already exists
+        $($(post).find(".hide-post")[0]).css("display", "none");
+      }
+    }else{
+      // Maximizing the post
+      $($(post).find(".hide-post")[0]).css("display", "");
+
+      // Load BEK stuff for posts
+      var list = $(post).find(".list")[0];
+
+      $(list).each(function(){
+        $(".body-container").each(function(){
+          FormatSinglePost2(this, false);
+          // ColorVotes();
+          // HoverVotes();
+          $(".toggle-minimized").each(function(){$(this).css("z-index", "1");});
+        });
+      });
+    }
+  });
+}
+
 /////////////////////////////////////////////
 // ========== BEK CONTROL PANEL ========== //
 /////////////////////////////////////////////
@@ -2596,7 +2656,7 @@ BEK.prototype.PanelHide = function(){
   $(".scroll-region").hide();
 
   // Animate
-  $("#bek-panel .setting").find("ul").hide();
+  // $("#bek-panel .setting").find("ul").hide();
   $("#bek-panel .col-right" ).stop().animate({left: "-" + (colRightWidth - colLeftWidth) + "px"}, 150, function(){
     $("#bek-panel .col-right").hide();
     $( "#bek-panel .col-left" ).stop().animate({left: "-" + (colLeftWidth) + "px"}, 200, function(){
@@ -2697,15 +2757,6 @@ BEK.prototype.HideSubboards = function(self){
 ///////////////////////////////////////
 var bek = new BEK();
 bek.Initialize();
-
-
-
-
-
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 // EmptyVoteReplacement: Fills things in the gutter on boards with no votes //
@@ -2858,10 +2909,6 @@ function LoadThread(){
     var region   = this.getElementsByClassName("realm")[0].textContent;
         region   = region.substring(1, region.length - 1);
 
-    // BEK staff have special gradient names, so I need to extract them using this method
-    if(this.getElementsByClassName("pxg-set").length > 0)
-      username = this.getElementsByClassName("pxg-set")[0].childNodes[0].textContent;
-
     self.users.push(username);
     self.regions.push(region);
   });
@@ -2885,7 +2932,7 @@ function LoadThread(){
 function FormatSomePosts(BEKData = false){
   if(!BEKData){
     $(".body-container").each(function(){
-      FormatSinglePost1(this, false);
+      FormatSinglePost2(this, false);
     });
   }else{
     $(".body-container").each(function(){
@@ -2986,11 +3033,6 @@ $.fn.hasOverflowY = function(){
 // ChangeElementType: Changes the element's type //
 ///////////////////////////////////////////////////
 (function($) {$.fn.ChangeElementType = function(newType) {var attrs = {}; $.each(this[0].attributes, function(idx, attr) {attrs[attr.nodeName] = attr.nodeValue;}); this.replaceWith(function() {return $("<" + newType + "/>", attrs).append($(this).contents());});};})(jQuery);
-
-//////////////////////////////////////////////////
-// GradientText: Gives a color gradient to text //
-//////////////////////////////////////////////////
-(function(e){e("head").append('<style type="text/css">.sn-pxg .pxg-set{user-select:none;-moz-user-select:none;-webkit-user-select:none;}.sn-pxg span.pxg-source{position:relative;display:inline-block;z-index:2;}.sn-pxg U.pxg-set,.sn-pxg U.pxg-set S,.sn-pxg U.pxg-set S B{left:0;right:0;top:0;bottom:0;height:inherit;width:inherit;position:absolute;display:inline-block;text-decoration:none;font-weight:inherit;}.sn-pxg U.pxg-set S{overflow:hidden;}.sn-pxg U.pxg-set{text-decoration:none;z-index:1;display:inline-block;position:relative;}</style>');e.fn.GradientText=function(t){function r(e){if("#"==e.substr(0,1)){e=e.substr(1)}if(3==e.length){e=e.substr(0,1)+e.substr(0,1)+e.substr(1,1)+e.substr(1,1)+e.substr(2,1)+e.substr(2,1)}return[parseInt(e.substr(0,2),16),parseInt(e.substr(2,2),16),parseInt(e.substr(4,2),16)]}function i(e){var t="0123456789abcdef";return"#"+t.charAt(parseInt(e[0]/16))+t.charAt(e[0]%16)+t.charAt(parseInt(e[1]/16))+t.charAt(e[1]%16)+t.charAt(parseInt(e[2]/16))+t.charAt(e[2]%16)}function s(e,n){var r=e>0?e/n:0;for(var i=0;i<t.colors.length;i++){fStopPosition=i/(t.colors.length-1);fLastPosition=i>0?(i-1)/(t.colors.length-1):0;if(r==fStopPosition){return t.colors[i]}else if(r<fStopPosition){fCurrentStop=(r-fLastPosition)/(fStopPosition-fLastPosition);return o(t.RGBcolors[i-1],t.RGBcolors[i],fCurrentStop)}}return t.colors[t.colors.length-1]}function o(e,t,n){var r=[];for(var s=0;s<3;s++){r[s]=e[s]+Math.round((t[s]-e[s])*n)}return i(r)}var t=e.extend({step:10,colors:["#ffcc00","#cc0000","#000000"],dir:"y"},t);t.RGBcolors=[];for(var n=0;n<t.colors.length;n++){t.RGBcolors[n]=r(t.colors[n])}return this.each(function(n,r){var i=e(r);if(!i.hasClass("sn-pxg")){var o=i.html();i.html('<span class="pxg-source" style="visibility: hidden;">'+o+"</span>").append('<u class="pxg-set"></u>');var u=i.find(".pxg-set");var a=i.find(".pxg-source");var f=a.innerWidth();var l=a.innerHeight();a.hide();i.addClass("sn-pxg");if(t.dir=="x"){var c=f}else if(t.dir=="y"){var c=l}var h=Math.floor(c/t.step);var p=h;var d=c-h*t.step;if(d>0){p++}u.css({width:f,height:l});var v=0;var m="";if(t.dir=="x"){for(var n=0;n<p;n++){var g=s(v,c);m+='<s style="height:'+l+"px;width:"+t.step+"px;left:"+v+"px;color:"+g+'"><b style="left:-'+v+"px;width:"+f+"px;height:"+l+'px;">'+o+"</b></s>";v=v+t.step}}else if(t.dir=="y"){for(var n=0;n<p;n++){var g=s(v,c);m+='<s style="width:'+f+"px;height:"+t.step+"px;top:"+v+"px;color:"+g+'"><b style="top:-'+v+"px;height:"+f+"px;height:"+l+'px;">'+o+"</b></s>";v=v+t.step}}u.append(m)}})}})(jQuery);
 
 ///////////////////////////////////////////////////////////////////
 // CreateAlertBox: Creates an alert box at the top of the window //
@@ -3363,7 +3405,7 @@ $(".box.show-more").click(function(event){
     else{
       if(oldLength != $("#discussion-list")[0].children.length){
         clearInterval(interval);
-        HideSubboards();
+        // HideSubboards();
         if(self.page == "Index" && emptyVoteReplacement != "off") EmptyVoteReplacement();
       }
     }

@@ -3,7 +3,7 @@
   "short_name": "BEK",
   "author": "Tundra Fizz",
   "description": "Enhances the League of Legends boards by providing additional features to it.",
-  "version": "0.1.0",
+  "version": "0.2.0",
 
   "icons": {
     "16": "icons/icon16.png",
@@ -19,8 +19,7 @@
       "https://*.leagueoflegends.com/*"
     ],
     "css": [
-      "css/fek-panel.css",
-      "css/thread.css"
+      "css/bek-panel.css"
     ],
     "js": [
       "js/jquery.js",
