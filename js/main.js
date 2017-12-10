@@ -40,7 +40,7 @@ BEK.prototype.Initialize = function(){
 
   var self = this;
 
-  self.BEKversion       = "0.2.0";
+  self.BEKversion       = "0.2.1";
   self.BEKpage          = "https://boards.na.leagueoflegends.com/en/c/general-discussion/U8uw8k1l";
   self.BEKgfx           = `${domain}/fek/gfx/misc/`;
   self.cIcons           = `${domain}/fek/gfx/iconsmallchampion/`;
