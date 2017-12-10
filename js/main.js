@@ -1762,6 +1762,7 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
     $(spanIcon).css("position", "relative");
     $(spanIcon).css("top",      "60px");
     $(spanIcon).css("left",     "-65px");
+    $(spanIcon).css("z-index",  "1");
 
     $(avatarImg).css("width",  avatarSize + "px");
     $(avatarImg).css("height", "auto");
@@ -1797,9 +1798,17 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
     $(this).hover(function(){
       var avatar = $($(this).find("img")[0]).attr("src");
 
+      var t = 26;
+      var l = avatarSize;
+
+      if(op){
+        t += 85; // Move the popup down +85
+        l += 20; // Move the popup left +20
+      }
+
       // Now create and append to innerDiv
       var popup = `
-      <div class="bek-profile-popup" style="position: absolute; border: 1px solid black; width: 100px; height: 112px; top: 26px; left: ${avatarSize}px; background-color: white; padding-left: 4px; font-size: 14px; text-align: left; line-height 17px;">
+      <div class="bek-profile-popup" style="position: absolute; border: 1px solid black; width: 100px; height: 112px; top: ${t}px; left: ${l}px; background-color: white; padding-left: 4px; font-size: 14px; text-align: left; line-height: 17px; z-index: 1;">
       <a href="#" id="prfle" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Profile</a><br>
       <a href="#" id="avatr" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">View Avatar</a><br>
       <a href="#" id="cname" style="color: black; letter-spacing: 0px; font-weight: bold; font-variant: normal; font-family: Spiegel-Regular, sans-serif">Copy Name</a><br>
