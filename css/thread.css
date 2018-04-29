@@ -167,6 +167,12 @@
   left:     12px     !important;
 }
 
+.inline-profile .title {
+  font-size:    14px   !important;
+  font-weight:  normal !important;
+  font-variant: none   !important;
+}
+
 /****************************/
 /* Remove the profile hover */
 /****************************/

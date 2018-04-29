@@ -1765,7 +1765,8 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
     $(spanIcon).css("z-index",  "1");
 
     $(avatarImg).css("width",  avatarSize + "px");
-    $(avatarImg).css("height", "auto");
+    $(avatarImg).css("height", avatarSize + "px");
+    // $(avatarImg).css("height", "auto");
 
     $("#content").css("padding-left", avatarSize + 15 + "px");
     $("#content").css("padding-top", "0px");
@@ -1774,7 +1775,8 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
     $(spanIcon).css("top",      "30px");
 
     $(avatarImg).css("width",  avatarSize + "px");
-    $(avatarImg).css("height", "auto");
+    $(avatarImg).css("height", avatarSize + "px");
+    // $(avatarImg).css("height", "auto");
 
     $(body).css("padding-left", avatarSize + 10 + "px");
     $(body).css("margin-top", "0px");
@@ -2017,41 +2019,11 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, 
           title = data.title;
       }
 
-      if(typeof data !== "undefined"){
-        if(data.b_raf)     {badges.push("https://cdn.leagueoflegends.com/apollo/badges/raf.png");}
-        if(data.b_s01gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s1gold.png");}
-        if(data.b_s01plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s1platinum.png");}
-
-        if(data.b_s02plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s2platinum.png");}
-        if(data.b_s02diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s2diamond.png");}
-
-        if(data.b_s03gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3gold.png");}
-        if(data.b_s03plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3platinum.png");}
-        if(data.b_s03diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3diamond.png");}
-        if(data.b_s03chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3challenger.png");}
-
-        if(data.b_s04gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4gold.png");}
-        if(data.b_s04plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4platinum.png");}
-        if(data.b_s04diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4diamond.png");}
-        if(data.b_s04mast) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4master.png");}
-        if(data.b_s04chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4challenger.png");}
-
-        if(data.b_s05gold) {badges.push("https://i.imgur.com/KqTvYEa.png");}
-        if(data.b_s05plat) {badges.push("https://i.imgur.com/l9lMtwa.png");}
-        if(data.b_s05diam) {badges.push("https://i.imgur.com/A073pTS.png");}
-        if(data.b_s05mast) {badges.push("https://i.imgur.com/ur0LOXd.png");}
-        if(data.b_s05chal) {badges.push("https://i.imgur.com/ZmmVMrB.png");}
-
-        if(data.b_s06gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6gold.png");}
-        if(data.b_s06plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6platinum.png");}
-        if(data.b_s06diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6diamond.png");}
-        if(data.b_s06mast) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6master.png");}
-        if(data.b_s06chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6challenger.png");}
-      }
-
+      // Staff badge
       if(staff == "1")
         badges.push(self.BEKgfx + "fekbadge.png");
 
+      // Custom badges
       if(badge){
         var collection = badge.split(",");
           for(var i = 0; i < collection.length; i++)
@@ -2059,9 +2031,94 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, 
               badges.push(collection[i]);
       }
 
+      if(typeof data !== "undefined"){
+        ////////////////////////////////////
+        // SEASON 7: Solo Summoner's Rift //
+        ////////////////////////////////////
+        if(data.b_s07chal_rankedsolo5x5) {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7challenger_solo.png");}
+        if(data.b_s07mast_rankedsolo5x5) {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7master_solo.png");}
+        if(data.b_s07diam_rankedsolo5x5) {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7dia_solo.png");}
+        if(data.b_s07plat_rankedsolo5x5) {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7plat_solo.png");}
+        if(data.b_s07gold_rankedsolo5x5) {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7gold_solo.png");}
+
+        ////////////////////////////////////
+        // SEASON 7: Flex Summoner's Rift //
+        ////////////////////////////////////
+        if(data.b_s07chal_rankedflexsr)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7challenger_flex5.png");}
+        if(data.b_s07mast_rankedflexsr)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7master_flex5.png");}
+        if(data.b_s07diam_rankedflexsr)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7dia_flex5.png");}
+        if(data.b_s07plat_rankedflexsr)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7plat_flex5.png");}
+        if(data.b_s07gold_rankedflexsr)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7gold_flex5.png");}
+
+        /////////////////////////////////////
+        // SEASON 7: Flex Twisted Treeline //
+        /////////////////////////////////////
+        if(data.b_s07chal_rankedflextt)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7challenger_flex3.png");}
+        if(data.b_s07mast_rankedflextt)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7master_flex3.png");}
+        if(data.b_s07diam_rankedflextt)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7dia_flex3.png");}
+        if(data.b_s07plat_rankedflextt)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7plat_flex3.png");}
+        if(data.b_s07gold_rankedflextt)  {badges.push("https://lolstatic-a.akamaihd.net/apollo/badges/s7gold_flex3.png");}
+
+        //////////////
+        // SEASON 6 //
+        //////////////
+        if(data.b_s06gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6gold.png");}
+        if(data.b_s06plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6platinum.png");}
+        if(data.b_s06diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6diamond.png");}
+        if(data.b_s06mast) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6master.png");}
+        if(data.b_s06chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s6challenger.png");}
+
+        //////////////
+        // SEASON 5 //
+        //////////////
+        if(data.b_s05gold) {badges.push("https://i.imgur.com/KqTvYEa.png");}
+        if(data.b_s05plat) {badges.push("https://i.imgur.com/l9lMtwa.png");}
+        if(data.b_s05diam) {badges.push("https://i.imgur.com/A073pTS.png");}
+        if(data.b_s05mast) {badges.push("https://i.imgur.com/ur0LOXd.png");}
+        if(data.b_s05chal) {badges.push("https://i.imgur.com/ZmmVMrB.png");}
+
+        //////////////
+        // SEASON 4 //
+        //////////////
+        if(data.b_s04gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4gold.png");}
+        if(data.b_s04plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4platinum.png");}
+        if(data.b_s04diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4diamond.png");}
+        if(data.b_s04mast) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4master.png");}
+        if(data.b_s04chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s4challenger.png");}
+
+        //////////////
+        // SEASON 3 //
+        //////////////
+        if(data.b_s03gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3gold.png");}
+        if(data.b_s03plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3platinum.png");}
+        if(data.b_s03diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3diamond.png");}
+        if(data.b_s03chal) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s3challenger.png");}
+
+        //////////////
+        // SEASON 2 //
+        //////////////
+        if(data.b_s02plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s2platinum.png");}
+        if(data.b_s02diam) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s2diamond.png");}
+
+        //////////////
+        // SEASON 1 //
+        //////////////
+        if(data.b_s01gold) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s1gold.png");}
+        if(data.b_s01plat) {badges.push("https://cdn.leagueoflegends.com/apollo/badges/s1platinum.png");}
+
+        //////////
+        // Misc //
+        //////////
+        if(data.b_raf)     {badges.push("https://cdn.leagueoflegends.com/apollo/badges/raf.png");}
+      }
+
       var wereThereBadges = false;
       if(badges.length)
         wereThereBadges = true;
+
+      // If you have more than three badges, remove the badges until only three badges remain. This is a temporary solution!
+      while(badges.length > 3)
+        badges.pop();
 
       while(badges.length > 0){
         var badgeName = badges.shift();
@@ -2117,10 +2174,22 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, 
       if($(".badge-container", profHover).length)
         badgeContainerHeight = $(".badge-container", profHover).height();
 
-      if($(".title", profHover).length)
+      // This must be done here, rather than the thread.css file because this is dynamically loaded content
+      if($(".title", profHover).length){
+        var titleElement = $(".title", profHover)[0];
+        $(titleElement).css("font-size",    "14px");
+        $(titleElement).css("font-weight",  "normal");
+        $(titleElement).css("font-variant", "none");
+
         titleHeight = $(".title", profHover).height();
+      }
 
       var newMinHeight = avatarSize - 25 + badgeContainerHeight + titleHeight + 2;
+      console.log("======================================");
+      console.log(body);
+      console.log(avatarSize);
+      console.log(badgeContainerHeight);
+      console.log(titleHeight);
       $(body).css("min-height", newMinHeight + "px");
     }
   });
