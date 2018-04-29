@@ -2255,7 +2255,7 @@ BEK.prototype.SquareAvatars = function(self){
 ////////////////////////////////////////////////////
 BEK.prototype.LoadIndex = function(self){
   self.WaitAndRun(".riot-voting > .total-votes",      self.ColorVotes);
-  self.WaitAndRun(".riot-voting > .total-votes",      self.HoverVotes);
+  // self.WaitAndRun(".riot-voting > .total-votes",      self.HoverVotes);
   self.WaitAndRun("#discussion-list .inline-profile", self.HighlightMyThreads);
   self.WaitAndRun("#discussion-list .inline-profile", self.EnhancedThreadPreview);
   self.WaitAndRun("#discussion-list .inline-profile", self.HideSubboards);
