@@ -30,6 +30,8 @@ function LoadCSS(url){var head = document.getElementsByTagName("head")[0];var cs
 // formData.append("key2", "data2");
 // SendToServer("post-url-here", formData, function(data){});
 
+var dataDragonVersion = null; // Make this local to BEK later, global variables are bad!
+
 function BEK(){}
 
 /////////////////////////////////////
@@ -40,7 +42,7 @@ BEK.prototype.Initialize = function(){
 
   var self = this;
 
-  self.BEKversion       = "0.2.1";
+  self.BEKversion       = "0.4.0";
   self.BEKpage          = "https://boards.na.leagueoflegends.com/en/c/general-discussion/U8uw8k1l";
   self.BEKgfx           = `${domain}/fek/gfx/misc/`;
   self.cIcons           = `${domain}/fek/gfx/iconsmallchampion/`;
@@ -93,13 +95,16 @@ BEK.prototype.Initialize = function(){
   var end             = windowURL.indexOf(".", start);
   self.platformRegion = windowURL.substring(start, end);
 
-  Get(null, function(data){
-    if($.isEmptyObject(data))
-      self.DefaultVariables();
-    else{
-      self.data = data;
-      self.Main();
-    }
+  $.getJSON("https://ddragon.leagueoflegends.com/api/versions.json", function(versions){
+    dataDragonVersion = versions[0];
+    Get(null, function(data){
+      if($.isEmptyObject(data))
+        self.DefaultVariables();
+      else{
+        self.data = data;
+        self.Main();
+      }
+    });
   });
 }
 
@@ -2377,7 +2382,8 @@ function MiniItemIcons(x){
   var start = x.indexOf(":") + 1;
   var end   = x.indexOf("}", start);
   var icon  = x.substring(start, end);
-  return `<img src="https://ddragon.leagueoflegends.com/cdn/5.21.1/img/item/${icon}.png" width="16px" height="16px">`;
+  icon = icon.replace(/"/g, "&quot;");
+  return `<img src="https://ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/item/${icon}.png" width="16px" height="16px">`;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2403,12 +2409,14 @@ function MiniSummonerIcons(x){
   if(icon == 30) icon = "0px -16px";
   if(icon == 31) icon = "-16px -16px";
 
+  icon = icon.replace(/"/g, "&quot;");
+
   if(icon == 32){
     icon = "-128px -32px";
-    return `<span style="background-size: 50%; background: transparent url('//ddragon.leagueoflegends.com/cdn/5.21.1/img/sprite/small_spell13.png') no-repeat scroll ${icon}; background-size: 1000%; width: 16px; height: 16px; display: inline-block;"></span>`;
+    return `<span style="background-size: 50%; background: transparent url('//ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/sprite/small_spell13.png') no-repeat scroll ${icon}; background-size: 1000%; width: 16px; height: 16px; display: inline-block;"></span>`;
   }
 
-  return `<span style="background-size: 50%; background: transparent url('//ddragon.leagueoflegends.com/cdn/5.21.1/img/sprite/small_spell0.png') no-repeat scroll ${icon}; background-size: 1000%; width: 16px; height: 16px; display: inline-block;"></span>`;
+  return `<span style="background-size: 50%; background: transparent url('//ddragon.leagueoflegends.com/cdn/${dataDragonVersion}/img/sprite/small_spell0.png') no-repeat scroll ${icon}; background-size: 1000%; width: 16px; height: 16px; display: inline-block;"></span>`;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2424,7 +2432,12 @@ BEK.prototype.EnhancedThreadPreview = function(self){
         $(this).attr("ttdata", $(this).attr("title"));
 
         $(this).parent().parent().parent().mouseenter(function(){
-          var replaceThing = $(this).find(".title-span").attr("ttdata").replace(/[\n\r]/g, "<br />").replace(/{{champion:??:.*?}}/g, MiniChampionIcons).replace(/{{item:??:.*?}}/g, MiniItemIcons).replace(/{{summoner:??:.*?}}/g, MiniSummonerIcons);
+          var replaceThing = $(this).find(".title-span").attr("ttdata")
+          .replace(/[\n\r]/g, "<br />")
+          .replace(/{{champion:??:.*?}}/g, MiniChampionIcons)
+          .replace(/{{item:??:.*?}}/g, MiniItemIcons)
+          .replace(/{{summoner:??:.*?}}/g, MiniSummonerIcons)
+          .replace(/\[\[spoiler:.*\]\]/g, "[[SPOILER HIDDEN]]")
 
           $("#bektooltip").html(`
             <div id="tooltip-label">${$(this).find(".username").text()}</div>
