@@ -1,5 +1,4 @@
-var domain = "https://tundrafizz.space";  // The domain of course
-// var domain = "https://fizzic.al";      // The domain of course
+var domain = "https://tundrafizz.space";    // The domain of course
 var Get    = chrome.storage.local.get;    // Alias for getting data
 var Set    = chrome.storage.local.set;    // Alias for setting data
 var Remove = chrome.storage.local.remove; // Alias for removing data
@@ -131,7 +130,6 @@ BEK.prototype.DefaultVariables = function(){
 ///////////////////////////////////////////////
 BEK.prototype.Main = function(){
   var self = this;
-  console.log(self["data"]);
 
   // self.GetAnnouncements();
   self.AddBEKNavBar();
@@ -160,8 +158,6 @@ BEK.prototype.Main = function(){
 BEK.prototype.GetAnnouncements = function(){
   var formData = new FormData();
   SendToServer(`${domain}/querytweets`, formData, function(data){
-    console.log(data);
-
     if(!data.length)
       return;
 
@@ -362,6 +358,22 @@ BEK.prototype.CreateFeatures = function(){
     }
   });
 
+  /////////////////////////////
+  // Feature: Disable Titles //
+  /////////////////////////////
+  featureMetaData = {
+    "tabGroup": "Core Mods",
+    "tab":      "LoL Boards",
+    "category": "User Identities",
+    "label":    "Disable Titles",
+    "tooltip":  "A temporary fix until a real fix is made for people's titles getting in the way of quoting",
+    "type":     {"type": "toggle"},
+    "starting": "off",
+    "off":      "off"
+  };
+
+  self.CreateFeature(featureMetaData, function(option){});
+
   ///////////////////////////
   // Feature: Upvote color //
   ///////////////////////////
@@ -442,9 +454,9 @@ BEK.prototype.CreateFeatures = function(){
 
   self.CreateFeature(featureMetaData, function(option){});
 
-  ///////////////////////////////
-  // Feature: Enhanced Preview //
-  ///////////////////////////////
+  ////////////////////////////
+  // Feature: Master Switch //
+  ////////////////////////////
   featureMetaData = {
     "tabGroup": "Core Mods",
     "tab":      "LoL Boards",
@@ -1575,7 +1587,6 @@ BEK.prototype.QueryServer = function(self){
   formData.append("regions", self.regions);
 
   SendToServer(`${domain}/database`, formData, function(data){
-    console.log(data);
     self.results = data.records;
     // self.BEKtweets = data.announcements;
     // BEKevent       = data.event;
@@ -2142,8 +2153,8 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, 
         // $(REEEEEEEE).css("min-height", currentHeight + "px", "important")
       }
 
-      // Apply a title if you have one
-      if(title){
+      // Apply a title if you have one AND SETTINGS OVERRIDE: Disable the title if the user has that as their setting
+      if(title && (self.data["Disable Titles"] == "off")){
         var divTitle = document.createElement("div");
 
         divTitle.className = "title";
@@ -2190,11 +2201,11 @@ BEK.prototype.GetBadgesAndTitle = function(usernameT, regionT, profHover, body, 
       }
 
       var newMinHeight = avatarSize - 25 + badgeContainerHeight + titleHeight + 2;
-      console.log("======================================");
-      console.log(body);
-      console.log(avatarSize);
-      console.log(badgeContainerHeight);
-      console.log(titleHeight);
+      // console.log("======================================");
+      // console.log(body);
+      // console.log(avatarSize);
+      // console.log(badgeContainerHeight);
+      // console.log(titleHeight);
       $(body).css("min-height", newMinHeight + "px");
     }
   });
@@ -2484,9 +2495,7 @@ BEK.prototype.RollDice = function(obj){
     // Extract text in between [roll and ]
     var origText = $(this).text();
     var regex   = /\[roll(.*?)\]/gi
-    // console.log(this);
-    // console.log(this.text);
-    // console.log($(this).text());
+
     var command = regex.exec(origText);
 
     if(command){
@@ -2495,11 +2504,9 @@ BEK.prototype.RollDice = function(obj){
       // command[1] : "2d100"
 
       var numbers = command[1].split("d");
-      console.log(numbers);
-
-      var result = 0;
-      var rolls  = 1;
-      var die    = 1000;
+      var result  = 0;
+      var rolls   = 1;
+      var die     = 1000;
 
       if(numbers.length == 1){
         die = parseInt(numbers[0]);
@@ -3525,8 +3532,6 @@ function AddPagingRight(){
         ++newPostCount;
       });
 
-      // console.log("Checking: " + newPostCount);
-
       if(currentPostCount != newPostCount){
         clearInterval(interval);
         LoadThread();
@@ -3557,8 +3562,6 @@ $(".paging.right").click(function(event){
       $(".body-container.clearfix").each(function(){
         ++newPostCount;
       });
-
-      // console.log("Checking: " + newPostCount);
 
       if(currentPostCount != newPostCount){
         clearInterval(interval);
