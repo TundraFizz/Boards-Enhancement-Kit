@@ -493,7 +493,7 @@ BEK.prototype.CreateFeatures = function(){
         event.preventDefault();
         event.stopPropagation();
         var user = $(this).text();
-        $(this).chrome.storage.local.remove();
+        $(this).remove();
         delete self.data["blacklist"][user];
         chrome.storage.local.set(self.data);
       });
@@ -510,7 +510,7 @@ BEK.prototype.CreateFeatures = function(){
             event.preventDefault();
             event.stopPropagation();
             GM_deleteValue(this.textContent);
-            this.chrome.storage.local.remove();
+            this.remove();
           });
 
           contentview[0].appendChild(myThing);
@@ -994,7 +994,7 @@ BEK.prototype.CreateFeatures = function(){
               event.preventDefault();
               event.stopPropagation();
               GM_deleteValue(this.textContent);
-              this.chrome.storage.local.remove();
+              this.remove();
             });
 
             contentview[0].appendChild(myThing);
@@ -1753,7 +1753,7 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
 
   // Hide blacklisted posts
   if(`${usernameT} (${regionT})` in self.data["blacklist"]){
-    $(obj).parent()[0].chrome.storage.local.remove();
+    $(obj).parent()[0].remove();
     return;
   }
 
@@ -1885,8 +1885,8 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
 
         alert("Name copied");
         document.execCommand("copy");
-        tempElement.chrome.storage.local.remove();
-        innerDiv.chrome.storage.local.remove();
+        tempElement.remove();
+        innerDiv.remove();
       });
 
       $("#lolnx").click(function(event){
@@ -1916,7 +1916,7 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
         });
       });
     }, function(){
-      $(".bek-profile-popup").chrome.storage.local.remove();
+      $(".bek-profile-popup").remove();
     });
   });
 
@@ -2282,7 +2282,7 @@ BEK.prototype.HoverVotes = function(self){
         $(this).hover(function(){
           self.ShowIndividualVotes(self, this);
         }, function(){
-          $("#up-down-display").chrome.storage.local.remove();
+          $("#up-down-display").remove();
           $(".total-votes").show();
         });
       }
@@ -2352,7 +2352,7 @@ BEK.prototype.LoadIndex = function(self){
     var realm    = $(".realm",    this).text();
 
     if(`${username} ${realm}` in self.data["blacklist"])
-      $(this).chrome.storage.local.remove();
+      $(this).remove();
   });
 }
 
@@ -2616,7 +2616,7 @@ BEK.prototype.FormatAllPosts = function(BEKData = false){
 
   // This removes the thing that mimimizes posts in Discussion View
   // This isn't desirable because it restricts freedom for Discussion View
-  // $(document).find(".toggle-minimized").chrome.storage.local.remove();
+  // $(document).find(".toggle-minimized").remove();
 
   if(!BEKData){
     if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
@@ -2844,7 +2844,7 @@ BEK.prototype.HideSubboards = function(self){
       if(typeof subboard !== "undefined"){
         var subboard = this.getElementsByClassName("discussion-footer")[0].getElementsByTagName("a")[1].textContent;
         if(self.data["hiddenBoards"][subboard] == "on")
-          $(this).chrome.storage.local.remove();
+          $(this).remove();
       }
     }
   });
@@ -2981,7 +2981,7 @@ function IndexBlacklist(){
 
       // If it's a person you blacklisted, hide the thread
       // if(GM_getValue(usernameT + " " + regionT, 0) == 1)
-      //   $(this).chrome.storage.local.remove();
+      //   $(this).remove();
     }
   });
 }
@@ -2994,7 +2994,7 @@ function LoadThread(){
 
   return;
   // Remove all "Posting as X" fields
-  $(document).find(".bottom-bar.clearfix.box").find(".left").chrome.storage.local.remove();
+  $(document).find(".bottom-bar.clearfix.box").find(".left").remove();
 
   // Make sure that the users/regions arrays are empty, since they will have
   // left-over data from when people switch pages in chronological view
@@ -3241,7 +3241,7 @@ function EmbedYouTube(){
     `);
 
     // Remove the old object since it's useless
-    $(youtubeObj[0]).chrome.storage.local.remove();
+    $(youtubeObj[0]).remove();
   }
 }
 
@@ -3265,7 +3265,7 @@ function RemoveThumbnailBackground(){
   }else if(animateThumbnails == "hide"){
     $(".discussion-list-item td.thumbnail").css("max-width", "0px");
     $(document.getElementsByClassName("thumbnail-fallback")).each(function(){
-      $(this).chrome.storage.local.remove();
+      $(this).remove();
     });
   }
 }
@@ -3330,10 +3330,10 @@ function RemoveNavListLinks(){
       if(navList.children[i].textContent == text && hide[text] == "on"){
         // Remove the <br> after the navLink, if it exists
         if(navList.children[i].nextSibling)
-          navList.children[i].nextSibling.chrome.storage.local.remove();
+          navList.children[i].remove();
 
         // Remove the <a href> link
-        navList.children[i].chrome.storage.local.remove();
+        navList.children[i].remove();
       }
     }
   }
@@ -3456,28 +3456,28 @@ function AddBoardsNavBar(){
         self.RPint = self.RPint + 1;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.chrome.storage.local.remove();
+          alertBanner();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/ghd7259r-guide-for-newcomers"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 4 || self.RPint == 5 || self.RPint == 8 || self.RPint == 9 || self.RPint == 12 || self.RPint == 13){
         self.RPint = self.RPint + 2;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.chrome.storage.local.remove();
+          alertBanner();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/LtW6jJgO-how-to-join-rps-and-not-get-yelled-at"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 2 || self.RPint == 3 || self.RPint == 8 || self.RPint == 9 || self.RPint == 10 || self.RPint == 11){
         self.RPint = self.RPint + 4;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.chrome.storage.local.remove();
+          alertBanner();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/V0JcVrj0-the-ask-champion-compendium"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 2 || self.RPint == 3 || self.RPint == 4 || self.RPint == 5 || self.RPint == 6 || self.RPint == 7){
         self.RPint = self.RPint + 8;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.chrome.storage.local.remove();
+          alertBanner();
       }
     }
   }
