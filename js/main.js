@@ -1,4 +1,4 @@
-var domain = "https://tundrafizz.space";    // The domain of course
+var domain = "https://tundrafizz.space";  // The domain of course
 var Get    = chrome.storage.local.get;    // Alias for getting data
 var Set    = chrome.storage.local.set;    // Alias for setting data
 var Remove = chrome.storage.local.remove; // Alias for removing data
@@ -17,9 +17,9 @@ function LoadCSS(url){var head = document.getElementsByTagName("head")[0];var cs
 // Example stuff //
 ///////////////////
 // Get(null, function(data){});
-// Set({ "key1": "This is a string" }, function(){ /* after */ });
-// Remove("key2", function(){});
-// Clear(function(){});
+// chrome.storage.local.set({ "key1": "This is a string" }, function(){ /* after */ });
+// chrome.storage.local.remove("key2", function(){});
+// chrome.storage.local.clear(function(){});
 //
 //////////////////////////////////////////////////////
 // Example on how the SendToServer function is used //
@@ -96,7 +96,7 @@ BEK.prototype.Initialize = function(){
 
   $.getJSON("https://ddragon.leagueoflegends.com/api/versions.json", function(versions){
     dataDragonVersion = versions[0];
-    Get(null, function(data){
+    chrome.storage.local.get(null, function(data){
       if($.isEmptyObject(data))
         self.DefaultVariables();
       else{
@@ -120,7 +120,7 @@ BEK.prototype.DefaultVariables = function(){
     "hiddenBoards": {}
   };
 
-  Set(self.data, function(){
+  chrome.storage.local.set(self.data, function(){
     self.Main();
   });
 }
@@ -135,7 +135,7 @@ BEK.prototype.Main = function(){
   self.AddBEKNavBar();
   self.CreateGUI();
   self.CreateFeatures();
-  Set(self.data); // Save any new default data that may have happened from CreateFeatures
+  chrome.storage.local.set(self.data); // Save any new default data that may have happened from CreateFeatures
   self.SettleGUI();
   self.KeyWatch();
 
@@ -493,9 +493,9 @@ BEK.prototype.CreateFeatures = function(){
         event.preventDefault();
         event.stopPropagation();
         var user = $(this).text();
-        $(this).remove();
+        $(this).chrome.storage.local.remove();
         delete self.data["blacklist"][user];
-        Set(self.data);
+        chrome.storage.local.set(self.data);
       });
 
       return;
@@ -510,7 +510,7 @@ BEK.prototype.CreateFeatures = function(){
             event.preventDefault();
             event.stopPropagation();
             GM_deleteValue(this.textContent);
-            this.remove();
+            this.chrome.storage.local.remove();
           });
 
           contentview[0].appendChild(myThing);
@@ -580,7 +580,7 @@ BEK.prototype.CreateFeatures = function(){
 
       $("#ResetSettings").click(function(){
         if(confirm("Are you sure that you want to reset all settings?")){
-          Clear();
+          chrome.storage.local.clear();
           location.reload();
         }
       });
@@ -593,7 +593,7 @@ BEK.prototype.CreateFeatures = function(){
         $("#NewHotkey").val("");
         $("#ChangeHotkeyInput").attr("hidden", "hidden");
         self.data["togglePanel"] = event.keyCode;
-        Set(self.data);
+        chrome.storage.local.set(self.data);
         alert(`The shortcut key for opening up the BEK control panel has been changed to ${event.key}\n\nRefresh the page for this change to go in effect.`);
       });
     });
@@ -994,7 +994,7 @@ BEK.prototype.CreateFeatures = function(){
               event.preventDefault();
               event.stopPropagation();
               GM_deleteValue(this.textContent);
-              this.remove();
+              this.chrome.storage.local.remove();
             });
 
             contentview[0].appendChild(myThing);
@@ -1441,12 +1441,12 @@ BEK.prototype.KeyWatch = function(){
         $(this).parent().attr("data", "off");
         $(this).parent().attr("off", "");
         self["data"][key] = "off";
-        Set(self.data);
+        chrome.storage.local.set(self.data);
       }else{
         $(this).parent().attr("data", "on");
         $(this).parent().removeAttr("off");
         self["data"][key] = "on";
-        Set(self.data);
+        chrome.storage.local.set(self.data);
       }
     }else if(type == "value" || type == "color"){
       var dflt   = $(this).parent().attr("dflt");
@@ -1455,7 +1455,7 @@ BEK.prototype.KeyWatch = function(){
       self["data"][key] = dflt;
       $("input", $(this).parent()).val(dflt);
 
-      Set(self.data);
+      chrome.storage.local.set(self.data);
     }
 
     $("#refreshNotice").addClass("visible");
@@ -1471,7 +1471,7 @@ BEK.prototype.KeyWatch = function(){
     //   else
     //     self.data[key] = "on";
 
-    //   Set(self.data);
+    //   chrome.storage.local.set(self.data);
     // }else{
     //   $(this).attr("data", "off");
 
@@ -1480,7 +1480,7 @@ BEK.prototype.KeyWatch = function(){
     //   else
     //     self.data[key] = "off";
 
-    //   Set(self.data);
+    //   chrome.storage.local.set(self.data);
     // }
   });
 
@@ -1497,7 +1497,7 @@ BEK.prototype.KeyWatch = function(){
       $(this).val(val);
       self["data"][key] = val;
       $(this).closest(".feature").attr("data", val);
-      Set(self.data);
+      chrome.storage.local.set(self.data);
       $("#refreshNotice").addClass("visible");
     }if(type == "color"){
       var val    = $(this).val();
@@ -1510,7 +1510,7 @@ BEK.prototype.KeyWatch = function(){
 
       self["data"][key] = val;
       $(this).closest(".feature").attr("data", val);
-      Set(self.data);
+      chrome.storage.local.set(self.data);
       $("#refreshNotice").addClass("visible");
     }
   });
@@ -1753,7 +1753,7 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
 
   // Hide blacklisted posts
   if(`${usernameT} (${regionT})` in self.data["blacklist"]){
-    $(obj).parent()[0].remove();
+    $(obj).parent()[0].chrome.storage.local.remove();
     return;
   }
 
@@ -1885,8 +1885,8 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
 
         alert("Name copied");
         document.execCommand("copy");
-        tempElement.remove();
-        innerDiv.remove();
+        tempElement.chrome.storage.local.remove();
+        innerDiv.chrome.storage.local.remove();
       });
 
       $("#lolnx").click(function(event){
@@ -1909,14 +1909,14 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
         var target    = usernameT + " (" + regionT + ")";
         var blacklist = self["data"]["blacklist"]
         blacklist[target] = 1;
-        Set(self.data, function(){
+        chrome.storage.local.set(self.data, function(){
           alert(target + " has been blacklisted. Refresh the page to update blacklisted users. To unblacklist somebody, open up the control panel by pressing the ~ key and click on the Blacklist tab.");
 
           // TODO: Update the blacklist if it's the current active tab
         });
       });
     }, function(){
-      $(".bek-profile-popup").remove();
+      $(".bek-profile-popup").chrome.storage.local.remove();
     });
   });
 
@@ -2282,7 +2282,7 @@ BEK.prototype.HoverVotes = function(self){
         $(this).hover(function(){
           self.ShowIndividualVotes(self, this);
         }, function(){
-          $("#up-down-display").remove();
+          $("#up-down-display").chrome.storage.local.remove();
           $(".total-votes").show();
         });
       }
@@ -2352,7 +2352,7 @@ BEK.prototype.LoadIndex = function(self){
     var realm    = $(".realm",    this).text();
 
     if(`${username} ${realm}` in self.data["blacklist"])
-      $(this).remove();
+      $(this).chrome.storage.local.remove();
   });
 }
 
@@ -2616,7 +2616,7 @@ BEK.prototype.FormatAllPosts = function(BEKData = false){
 
   // This removes the thing that mimimizes posts in Discussion View
   // This isn't desirable because it restricts freedom for Discussion View
-  // $(document).find(".toggle-minimized").remove();
+  // $(document).find(".toggle-minimized").chrome.storage.local.remove();
 
   if(!BEKData){
     if(document.getElementsByClassName("op-container")[0].getElementsByClassName("inline-profile").length){
@@ -2844,7 +2844,7 @@ BEK.prototype.HideSubboards = function(self){
       if(typeof subboard !== "undefined"){
         var subboard = this.getElementsByClassName("discussion-footer")[0].getElementsByTagName("a")[1].textContent;
         if(self.data["hiddenBoards"][subboard] == "on")
-          $(this).remove();
+          $(this).chrome.storage.local.remove();
       }
     }
   });
@@ -2981,7 +2981,7 @@ function IndexBlacklist(){
 
       // If it's a person you blacklisted, hide the thread
       // if(GM_getValue(usernameT + " " + regionT, 0) == 1)
-      //   $(this).remove();
+      //   $(this).chrome.storage.local.remove();
     }
   });
 }
@@ -2994,7 +2994,7 @@ function LoadThread(){
 
   return;
   // Remove all "Posting as X" fields
-  $(document).find(".bottom-bar.clearfix.box").find(".left").remove();
+  $(document).find(".bottom-bar.clearfix.box").find(".left").chrome.storage.local.remove();
 
   // Make sure that the users/regions arrays are empty, since they will have
   // left-over data from when people switch pages in chronological view
@@ -3241,7 +3241,7 @@ function EmbedYouTube(){
     `);
 
     // Remove the old object since it's useless
-    $(youtubeObj[0]).remove();
+    $(youtubeObj[0]).chrome.storage.local.remove();
   }
 }
 
@@ -3265,7 +3265,7 @@ function RemoveThumbnailBackground(){
   }else if(animateThumbnails == "hide"){
     $(".discussion-list-item td.thumbnail").css("max-width", "0px");
     $(document.getElementsByClassName("thumbnail-fallback")).each(function(){
-      $(this).remove();
+      $(this).chrome.storage.local.remove();
     });
   }
 }
@@ -3330,10 +3330,10 @@ function RemoveNavListLinks(){
       if(navList.children[i].textContent == text && hide[text] == "on"){
         // Remove the <br> after the navLink, if it exists
         if(navList.children[i].nextSibling)
-          navList.children[i].nextSibling.remove();
+          navList.children[i].nextSibling.chrome.storage.local.remove();
 
         // Remove the <a href> link
-        navList.children[i].remove();
+        navList.children[i].chrome.storage.local.remove();
       }
     }
   }
@@ -3456,28 +3456,28 @@ function AddBoardsNavBar(){
         self.RPint = self.RPint + 1;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.remove();
+          alertBanner.chrome.storage.local.remove();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/ghd7259r-guide-for-newcomers"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 4 || self.RPint == 5 || self.RPint == 8 || self.RPint == 9 || self.RPint == 12 || self.RPint == 13){
         self.RPint = self.RPint + 2;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.remove();
+          alertBanner.chrome.storage.local.remove();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/LtW6jJgO-how-to-join-rps-and-not-get-yelled-at"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 2 || self.RPint == 3 || self.RPint == 8 || self.RPint == 9 || self.RPint == 10 || self.RPint == 11){
         self.RPint = self.RPint + 4;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.remove();
+          alertBanner.chrome.storage.local.remove();
       }
     }else if(url == "https://boards.na.leagueoflegends.com/en/c/roleplaying/V0JcVrj0-the-ask-champion-compendium"){
       if(self.RPint === 0 || self.RPint == 1 || self.RPint == 2 || self.RPint == 3 || self.RPint == 4 || self.RPint == 5 || self.RPint == 6 || self.RPint == 7){
         self.RPint = self.RPint + 8;
         GM_setValue("_RP", self.RPint);
         if(self.RPint == 15)
-          alertBanner.remove();
+          alertBanner.chrome.storage.local.remove();
       }
     }
   }
