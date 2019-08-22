@@ -31,6 +31,7 @@
   position:       relative !important;
   display:        table    !important;
   top:            30px     !important;
+  left:           30px     !important;
   width:          100px;               /* Not important because this can change depending on user settings */
   height:         100px;               /* Not important because this can change depending on user settings */
   margin:         0        !important;
@@ -165,6 +166,10 @@
 :not(.isDeleted) > .body-container > .header > .timeago {
   position: relative !important;
   left:     12px     !important;
+}
+
+.body-container > .footer {
+  margin-top: 10px !important;
 }
 
 .inline-profile .title {

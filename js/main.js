@@ -41,7 +41,7 @@ BEK.prototype.Initialize = function(){
 
   var self = this;
 
-  self.BEKversion       = "0.4.0";
+  self.BEKversion       = "0.4.4";
   self.BEKpage          = "https://boards.na.leagueoflegends.com/en/c/general-discussion/U8uw8k1l";
   self.BEKgfx           = `${domain}/fek/gfx/misc/`;
   self.cIcons           = `${domain}/fek/gfx/iconsmallchampion/`;
@@ -150,6 +150,8 @@ BEK.prototype.Main = function(){
     self.WaitAndRun(".profile-hover", self.QueryServer);
 
   self.RunMutationObserver();
+
+  $(".body-container > .footer").css("margin-top",  "10px");
 }
 
 ///////////////////////////////////////////////////////
@@ -1789,6 +1791,7 @@ BEK.prototype.FormatSinglePostGeneric = function(obj, op){
   }else{
     $(spanIcon).css("position", "relative");
     $(spanIcon).css("top",      "30px");
+    $(spanIcon).css("left",     "30px");
 
     $(avatarImg).css("width",  avatarSize + "px");
     $(avatarImg).css("height", avatarSize + "px");
